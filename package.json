@@ -1,0 +1,19 @@
+{
+  "name": "shooter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "master.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.4.8"
+  },
+  "engines": {
+    "node": "4.1.x"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node master.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
