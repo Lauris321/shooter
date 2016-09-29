@@ -4,56 +4,14 @@ var colDetService = require('./collisionDetectionService.js');
 var sockets = {};
 var players = {};
 
-var map = {
-    "_id": "test",
-    "width": 500,
-    "height": 500,
-    "walls": [
-        {
-            "x": 0,
-            "y": 0,
-            "w": 500,
-            "h": 8
-        },
-        {
-            "x": 0,
-            "y": 492,
-            "w": 500,
-            "h": 8
-        },
-        {
-            "x": 0,
-            "y": 0,
-            "w": 8,
-            "h": 500
-        },
-        {
-            "x": 492,
-            "y": 0,
-            "w": 8,
-            "h": 500
-        },
-        {
-            "x": 0,
-            "y": 250,
-            "w": 200,
-            "h": 8
-        },
-        {
-            "x": 350,
-            "y": 150,
-            "w": 8,
-            "h": 200
-        }
-    ]
-};
+var map = {};
 
-// mongoService.mongoConnect(() => {
-//     mongoService.getItemById('test', 'mapsCollection', (res) => {
-// 		map = res;
+mongoService.mongoConnect(() => {
+    mongoService.getItemById('test', 'mapsCollection', (res) => {
+		map = res;
 		
-// 	})
-// });
+	})
+});
 
 var deltaTimer = {
 	then: Date.now(),
