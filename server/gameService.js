@@ -64,7 +64,7 @@ function Player(_id) {
 	this.pressingAttack = false;
 	this.angle = 0;
 	this.maxSpd = 200;	// px/s
-	this.color = '#00ff00';
+	this.color = '#ffff00';
 	this.bullets = {};
 	this.shootTimer = {
 		lastShot: 0,
