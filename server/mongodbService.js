@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://testuser:testuser@ds021326.mlab.com:21326/shooterdb';
 
-let collections;
+var collections;
 
 // var map = {
 // 	_id: 'test',
