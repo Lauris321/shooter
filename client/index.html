@@ -2,85 +2,163 @@
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
+	var players = [];
+	var mouseX = 0;
+	var mouseY = 0;
+	var map = {};
+
+	function Bullet(init) {
+		this._id = init._id;
+		this.x = init.x;
+		this.y = init.y;
+		this.angle = init.angle;
+
+		this.draw = function(ctx) {
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(Math.cos(this.angle / 180 * Math.PI) * -20 + this.x, 
+				Math.sin(this.angle / 180 * Math.PI) * -20 + this.y);
+		}
+	}
+
+	function Player(initPack) {
+		this._id = initPack._id;
+		this.x = initPack.x;
+		this.y = initPack.y;
+		this.angle = initPack.angle;
+		this.color = initPack.color;
+		this.bullets = {};
+
+		this.draw = function(ctx) {
+			ctx.strokeStyle = this.color;
+			ctx.shadowColor = this.color;
+			ctx.shadowBlur = 10;
+			ctx.lineWidth = 3;
+			ctx.beginPath();
+            ctx.arc(this.x, this.y, 15, 0, 2 * Math.PI);
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(Math.cos(this.angle / 180 * Math.PI) * 20 + this.x, 
+				Math.sin(this.angle / 180 * Math.PI) * 20 + this.y);
+
+			for (bullet in this.bullets) {
+				this.bullets[bullet].draw(ctx);
+			}
+			ctx.stroke();
+		}
+
+		this.setPos = function(x, y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	function drawMap(ctx, map) {
+		ctx.fillStyle = "#555555";
+		ctx.shadowBlur = 0;
+		ctx.beginPath();
+		for(var wall in map.walls) {
+			ctx.fillRect(map.walls[wall].x, map.walls[wall].y, map.walls[wall].w, map.walls[wall].h);
+		}
+		ctx.stroke();
+	}
+
 	var ctx = document.getElementById("ctx").getContext("2d");
-	ctx.font = '30px Arial';
-    ctx.shadowBlur = 5;
     ctx.shadowColor = "#00ff00";
     ctx.strokeStyle = "#00ff00";
-    ctx.lineWidth = 3;
     ctx.fillStyle = "black";
+	ctx.shadowBlur = 10;
+	ctx.lineWidth = 3;
 	var socket = io();
+	var _id = '';
 	var angle = 0;
 
-	var mapWidth = 0;
-	var mapHeight = 0;
-	var playerX = 0;
-	var playerY = 0;
-    
-	socket.on('mapInfo',function(data){
-		mapWidth = data.width;
-		mapHeight = data.height;
-		//document.getElementById("ctx").width = mapWidth;
-		//document.getElementById("ctx").height = mapHeight;
-		ctx = document.getElementById("ctx").getContext("2d");
-	});
+	socket.on('init', (data) => {
+		map = data.map;
+		players = [];
+		for (var i in data.players) {
+			players[data.players[i]._id] = new Player(data.players[i]);
+		}
+		_id = data.yourId;
 		
-	socket.on('newPositions',function(data){
-		ctx.clearRect(0, 0, mapWidth, mapHeight);
-        ctx.fillRect(0, 0, mapWidth, mapHeight);
-		ctx.shadowBlur = 5;
-		ctx.lineWidth = 3;
-		for(var i = 0 ; i < data.player.length; i++) {
-            ctx.beginPath();
-            ctx.arc(data.player[i].x, data.player[i].y, 15, 0, 2 * Math.PI);
-            ctx.stroke();
-        }
-		ctx.shadowBlur = 0;
-		ctx.lineWidth = 2;
-		for(var i = 0 ; i < data.bullet.length; i++) {
-			ctx.beginPath();
-			ctx.moveTo(data.bullet[i].x, data.bullet[i].y);
-			ctx.lineTo(data.bullet[i].x - 2 * data.bullet[i].spdX,
-			data.bullet[i].y - 2 * data.bullet[i].spdY);
-			ctx.stroke();
+	});
+
+	socket.on('createObject', (data) => {
+		switch(data.type) {
+			case 'bullet':
+				players[data.owner].bullets[data._id] = new Bullet({
+					_id: data._id,
+					x: data.x,
+					y: data.y,
+					angle: data.angle,
+				});
+				break;
+			default:
+				players[data._id] = new Player(data);
 		}
 	});
 
-	document.onkeydown = function(event){
-		if(event.keyCode === 68)	//d
-			socket.emit('keyPress',{inputId:'right',state:true});
-		else if(event.keyCode === 83)	//s
-			socket.emit('keyPress',{inputId:'down',state:true});
-		else if(event.keyCode === 65) //a
-			socket.emit('keyPress',{inputId:'left',state:true});
-		else if(event.keyCode === 87) // w
-			socket.emit('keyPress',{inputId:'up',state:true});
+	socket.on('update', (data) => {
+		for (var i in data) {
+			players[data[i]._id].setPos(data[i].x, data[i].y);
+			players[data[i]._id].angle = data[i].angle;
+			players[data[i]._id].color = data[i].color;
+
+			for(bullet in players[data[i]._id].bullets) {
+				players[data[i]._id].bullets[bullet].x = data[i].bullets[bullet].x;
+				players[data[i]._id].bullets[bullet].y = data[i].bullets[bullet].y;
+			}
+		}
+	});
+
+	socket.on('removeObject', (data) => {
+		delete players[data];
+	});
+
+	document.onkeydown = function(event) {
+		if (event.keyCode === 68)	//d
+			socket.emit('keyPress', {inputId: 'right', state: true});
+		else if (event.keyCode === 83)	//s
+			socket.emit('keyPress', {inputId: 'down', state: true});
+		else if (event.keyCode === 65) //a
+			socket.emit('keyPress', {inputId: 'left', state: true});
+		else if (event.keyCode === 87) // w
+			socket.emit('keyPress', {inputId: 'up', state: true});
 			
 	}
-	document.onkeyup = function(event){
-		if(event.keyCode === 68)	//d
-			socket.emit('keyPress',{inputId:'right',state:false});
-		else if(event.keyCode === 83)	//s
-			socket.emit('keyPress',{inputId:'down',state:false});
-		else if(event.keyCode === 65) //a
-			socket.emit('keyPress',{inputId:'left',state:false});
-		else if(event.keyCode === 87) // w
-			socket.emit('keyPress',{inputId:'up',state:false});
+	document.onkeyup = function(event) {
+		if (event.keyCode === 68)	//d
+			socket.emit('keyPress', {inputId: 'right', state: false});
+		else if (event.keyCode === 83)	//s
+			socket.emit('keyPress', {inputId: 'down', state: false});
+		else if (event.keyCode === 65) //a
+			socket.emit('keyPress', {inputId: 'left', state: false});
+		else if (event.keyCode === 87) // w
+			socket.emit('keyPress', {inputId: 'up', state: false});
 	}
 
+	setInterval(() => {
+		ctx.fillStyle = '#000000';
+		ctx.clearRect(0, 0, 500, 500);
+        ctx.fillRect(0, 0, 500, 500);
+
+		
+		drawMap(ctx, map);
+		for (var i in players) {
+            players[i].draw(ctx);
+        }
+	}, 1000/60);
+
 	document.onmousedown = function(event){
-		socket.emit('keyPress',{inputId:'attack',state:true});
+		socket.emit('keyPress', {inputId: 'attack', state: true});
 	}
 
 	document.onmouseup = function(event){
-		socket.emit('keyPress',{inputId:'attack',state:false});
+		console.log()
+		socket.emit('keyPress', {inputId: 'attack', state: false});
 	}
 	
 	document.onmousemove = function(event){
-		var x = -250 + event.clientX - 8;
-		var y = -250 + event.clientY - 8;
-		angle = Math.atan2(y,x) / Math.PI * 180;
-		socket.emit('keyPress',{inputId:'mouseAngle',state:angle});
+		mouseX = -players[_id].x + event.clientX - 8;
+		mouseY = -players[_id].y + event.clientY - 8;
+		socket.emit('keyPress', {inputId: 'mouseAngle', mouseX: mouseX, mouseY: mouseY});
 	}
-	
 </script>
