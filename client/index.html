@@ -26,7 +26,7 @@
 		this.y = initPack.y;
 		this.angle = initPack.angle;
 		this.color = initPack.color;
-		this.bullets = {};
+		this.bullets = initPack.bullets;
 
 		this.draw = function(ctx) {
 			ctx.strokeStyle = this.color;
@@ -76,6 +76,15 @@
 		players = [];
 		for (var i in data.players) {
 			players[data.players[i]._id] = new Player(data.players[i]);
+
+			for(var bullet in data.players[i].bullets) {
+				players[data.players[i]._id].bullets[bullet] = new Bullet({
+					_id: bullet,
+					x: data.players[i].bullets[bullet].x,
+					y: data.players[i].bullets[bullet].y,
+					angle: data.players[i].bullets[bullet].angle,
+				});
+			}
 		}
 		_id = data.yourId;
 		
