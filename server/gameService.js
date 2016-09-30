@@ -240,13 +240,16 @@ var sendCreateObjectPack = (object) => {
 }
 
 var updateGame = () => {
-	var pack = [];
+	var pack = {};
+	pack.players = [];
 	deltaTimer.updateDelta();
     for (var i in players) {
 		var curPlayer = players[i];
 		curPlayer.update(deltaTimer.delta);
-		pack.push(curPlayer.getUpdatePack());
+		pack.players.push(curPlayer.getUpdatePack());
 	}
+
+	pack.serverTime = Date.now();
 
 	for (var i in sockets) {
 		var socket = sockets[i];
