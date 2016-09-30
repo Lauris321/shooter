@@ -7,6 +7,8 @@
 	var mouseY = 0;
 	var map = {};
 	var ping = 0;
+	var serverTime = 0;
+	var localTime = 0;
 
 	function Bullet(init) {
 		this._id = init._id;
@@ -118,8 +120,8 @@
 				players[data.players[i]._id].bullets[bullet].y = data.players[i].bullets[bullet].y;
 			}
 		}
-
-		ping = Date.now() - data.serverTime;
+		serverTime = data.serverTime;
+		ping = Date.now() - serverTime;
 	});
 
 	socket.on('removeObject', (data) => {
@@ -162,6 +164,8 @@
 		ctx.fillStyle = '#ffff00';
 		ctx.font="10px Arial";
 		ctx.fillText("Ping: " + ping, 430, 7);
+		ctx.fillText("Server: " + serverTime, 100, 7);
+		ctx.fillText("Loacal: " + Date.now(), 100, 17);
 	}, 1000/60);
 
 	document.onmousedown = function(event){
