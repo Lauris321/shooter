@@ -29,6 +29,17 @@ var RectCircleColliding = (cx, cy, r, rect) => {
     return (dx * dx + dy * dy <= (r * r));
 }
 
+var CircleDotColliding = (cx, cy, dx, dy, r) => {
+    var dx = cx - dx;
+    var dy = cy - dy;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < r) {
+        return true;
+    }
+    return false;
+}
+
 var CircleCircleColliding = (c1x, c1y, c2x, c2y, r1, r2) => {
     var dx = c1x - c2x;
     var dy = c1y - c2y;
@@ -43,5 +54,6 @@ var CircleCircleColliding = (c1x, c1y, c2x, c2y, r1, r2) => {
 module.exports = {
     RectDotColliding,
     RectCircleColliding,
+    CircleDotColliding,
     CircleCircleColliding,
 };

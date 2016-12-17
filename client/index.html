@@ -125,7 +125,15 @@
 	});
 
 	socket.on('removeObject', (data) => {
-		delete players[data];
+		switch(data.type) {
+		case 'player':
+			delete players[data._id];
+			break;
+		case 'bullet':
+			delete players[data.owner].bullets[data._id];
+			break;
+		}
+		
 	});
 
 	document.onkeydown = function(event) {

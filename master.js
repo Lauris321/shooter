@@ -21,10 +21,12 @@ io.sockets.on('connection', (socket) => {
 	socket.id = Math.random();
 	gameService.addSocket(socket);
 
-	gameService.addPlayer(socket.id);
-	
-	gameService.sendInitPack(socket.id);
-	gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
-	
-	gameService.getPlayer(socket.id).connect(socket);
+	const res = gameService.addPlayer(socket.id);
+	console.log(res);
+
+	if (res === "Player added!") {
+		gameService.sendInitPack(socket.id);
+		gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
+		gameService.getPlayer(socket.id).connect(socket);
+	}
 });

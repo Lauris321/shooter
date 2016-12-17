@@ -9,7 +9,6 @@ var map = {};
 mongoService.mongoConnect(() => {
     mongoService.getItemById('test', 'mapsCollection', (res) => {
 		map = res;
-		
 	})
 });
 
@@ -24,14 +23,18 @@ var deltaTimer = {
 
 function Bullet(init) {
 	this._id = init._id;
+	this.owner = init.owner;
+	this.type = "bullet";
 	this.x = init.x;
 	this.y = init.y;
-	this.speedX = Math.cos(init.angle / 180 * Math.PI) * 400;
-	this.speedY = Math.sin(init.angle / 180 * Math.PI) * 400;
+	this.speedX = Math.cos(init.angle / 180 * Math.PI) * 800;
+	this.speedY = Math.sin(init.angle / 180 * Math.PI) * 800;
 	this.angle = init.angle
 
-	this.getUpdatePack = {
+	this.updatePack = {
 		_id: this._id,
+		owner: this.owner,
+		type: this.type,
 		x: this.x,
 		y: this.y,
 	}
@@ -45,18 +48,30 @@ function Bullet(init) {
 		return false;
 	}
 
+	this.checkPlayers = function() {
+		for(var player in players) {
+			if (colDetService.CircleDotColliding(players[player].x, players[player].y, this.x, this.y, 19)) {
+				return player;
+			}
+		}
+		return false;
+	}
+
 	this.update = function(delta) {
 		this.x += this.speedX * delta;
 		this.y += this.speedY * delta;
 	}
 }
 
-function Player(_id) {
+function Player(_id, spawn) {
 	this._id = _id;
-	this.x = 250;
-	this.y = 400;
+	this.type = "player";
+	this.spawn = spawn;
+	this.x = spawn.x;
+	this.y = spawn.y;
 	this.mouseX = 0;
 	this.mouseY = 0;
+	this.alive = true;
 	this.pressingLeft = false;
 	this.pressingRight = false;
 	this.pressingUp = false;
@@ -64,17 +79,17 @@ function Player(_id) {
 	this.pressingAttack = false;
 	this.angle = 0;
 	this.maxSpd = 200;	// px/s
-	this.color = '#ffff00';
+	this.color = spawn.color;
 	this.bullets = {};
 	this.shootTimer = {
 		lastShot: 0,
-		shootingRate: 100, // ms/bullet
+		shootingRate: 300, // ms/bullet
 	};
 
 	this.getInitPack = function() {
 		return {
 			_id: this._id,
-			type: 'player',
+			type: this.type,
 			x: this.x,
 			y: this.y,
 			angle: this.angle,
@@ -86,6 +101,7 @@ function Player(_id) {
 	this.getUpdatePack = function() {
 		return {
 			_id: this._id,
+			type: this.type,
 			x: this.x,
 			y: this.y,
 			angle: this.angle,
@@ -113,8 +129,9 @@ function Player(_id) {
 		});
 
 		socket.on('disconnect', () => {
+			map.spawnpoints[players[this._id].spawn._id].free = true;
 			for (var i in sockets) {
-				sockets[i].emit('removeObject', socket.id);
+				sockets[i].emit('removeObject', this.getUpdatePack());
 			}
 			delete sockets[socket.id];
 			delete players[socket.id];
@@ -122,80 +139,96 @@ function Player(_id) {
 	}
 
 	this.update = function(delta) {
-		var newX = this.x;
-		var newY = this.y;
-		
-		if (this.pressingLeft) {
-			this.mouseX += this.x;
-			newX -= this.maxSpd * delta;
-
-			if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
-				newX += this.maxSpd * delta;
-                this.mouseX -= this.x;
-			} else {
-                this.mouseX -= newX;
-            }
-		}
-		if (this.pressingRight) {
-			this.mouseX += this.x;
-			newX += this.maxSpd * delta;
-
-			if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+		if (this.alive) {
+			var newX = this.x;
+			var newY = this.y;
+			
+			if (this.pressingLeft) {
+				this.mouseX += this.x;
 				newX -= this.maxSpd * delta;
-                this.mouseX -= this.x;
-			} else {
-                this.mouseX -= newX;
-            }
-		}
-		if (this.pressingUp) {
-			this.mouseY += this.y;
-			newY -= this.maxSpd * delta;
 
-			if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
-				newY += this.maxSpd * delta;
-                this.mouseY -= this.y;
-			} else {
-                this.mouseY -= newY;
-            }
-		}
-		if (this.pressingDown) {
-			this.mouseY += this.y;
-			newY += this.maxSpd * delta;
+				if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+					newX += this.maxSpd * delta;
+					this.mouseX -= this.x;
+				} else {
+					this.mouseX -= newX;
+				}
+			}
+			if (this.pressingRight) {
+				this.mouseX += this.x;
+				newX += this.maxSpd * delta;
 
-			if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+				if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+					newX -= this.maxSpd * delta;
+					this.mouseX -= this.x;
+				} else {
+					this.mouseX -= newX;
+				}
+			}
+			if (this.pressingUp) {
+				this.mouseY += this.y;
 				newY -= this.maxSpd * delta;
-                this.mouseY -= this.y;
-			} else {
-                this.mouseY -= newY;
-            }
-		}
 
-		if(this.pressingAttack && (Date.now() - this.shootTimer.lastShot) > this.shootTimer.shootingRate ) {
-			this.shootTimer.lastShot = Date.now();
-			var newBullet = {
-				_id: Math.random(), 
-				type: 'bullet',
-				owner: this._id,
-				angle: this.angle, 
-				x: Math.cos(this.angle / 180 * Math.PI) * 20 + this.x, 
-				y: Math.sin(this.angle / 180 * Math.PI) * 20 + this.y,
-			};
+				if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+					newY += this.maxSpd * delta;
+					this.mouseY -= this.y;
+				} else {
+					this.mouseY -= newY;
+				}
+			}
+			if (this.pressingDown) {
+				this.mouseY += this.y;
+				newY += this.maxSpd * delta;
 
-			this.bullets[newBullet._id] = new Bullet(newBullet);
-			sendCreateObjectPack(newBullet);
+				if (this.checkWalls(newX, newY) || this.checkPlayers(newX, newY)) {
+					newY -= this.maxSpd * delta;
+					this.mouseY -= this.y;
+				} else {
+					this.mouseY -= newY;
+				}
+			}
+
+			if(this.pressingAttack && (Date.now() - this.shootTimer.lastShot) > this.shootTimer.shootingRate ) {
+				this.shootTimer.lastShot = Date.now();
+				var newBullet = {
+					_id: Math.random(),
+					type: 'bullet',
+					owner: this._id,
+					angle: this.angle, 
+					x: Math.cos(this.angle / 180 * Math.PI) * 20 + this.x, 
+					y: Math.sin(this.angle / 180 * Math.PI) * 20 + this.y,
+				};
+
+				this.bullets[newBullet._id] = new Bullet(newBullet);
+				sendCreateObjectPack(newBullet);
+			}
+
+			this.x = newX;
+			this.y = newY;
+			
+			this.angle = Math.atan2(this.mouseY, this.mouseX) / Math.PI * 180;
 		}
 
 		for(var bullet in this.bullets) {
+			let hit = this.bullets[bullet].checkPlayers();
 			if (this.bullets[bullet].checkWalls()) {
+				for (var i in sockets) {
+					sockets[i].emit('removeObject', this.bullets[bullet].updatePack);
+				}
+				delete this.bullets[bullet];
+			} else if (hit != false && hit != this._id && players[hit].alive) {
+				for (var i in sockets) {
+					sockets[i].emit('removeObject', this.bullets[bullet].updatePack);
+					// sockets[i].emit('removeObject', players[hit].getUpdatePack());
+				}
+				players[hit].alive = false;
+				players[hit].x = players[hit].spawn.x;
+				players[hit].y = players[hit].spawn.y;
+				delete this.bullets[bullet];
 			} else {
 				this.bullets[bullet].update(delta);
 			}
 		}
-
-		this.x = newX;
-		this.y = newY;
-		
-		this.angle = Math.atan2(this.mouseY, this.mouseX) / Math.PI * 180;
 	}
 
 	this.checkWalls = function(x, y) {
@@ -209,7 +242,7 @@ function Player(_id) {
 
 	this.checkPlayers = function(x, y) {
 		for(var player in players) {
-			if(players[player]._id != this._id) {
+			if(players[player]._id != this._id && players[player].alive) {
 				if (colDetService.CircleCircleColliding(x, y, players[player].x, players[player].y, 17, 17)) {
 					return true;
 				}
@@ -262,7 +295,15 @@ var getPlayer = (playerId) => {
 }
 
 var addPlayer = (playerId) => {
-    players[playerId] = new Player(playerId);
+	for (var value of map.spawnpoints) {
+		if( value.free == true) {
+			players[playerId] = new Player(playerId, value);
+			found = true;
+			value.free = false;
+			return "Player added!";
+		}
+	}
+	return "No spawns left!";
 }
 
 var addSocket = (socket) => {
