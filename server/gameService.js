@@ -210,7 +210,7 @@ function Player(_id, spawn) {
 		}
 
 		for(var bullet in this.bullets) {
-			let hit = this.bullets[bullet].checkPlayers();
+			const hit = this.bullets[bullet].checkPlayers();
 			if (this.bullets[bullet].checkWalls()) {
 				for (var i in sockets) {
 					sockets[i].emit('removeObject', this.bullets[bullet].updatePack);
