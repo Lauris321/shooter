@@ -219,7 +219,7 @@ function Player(_id, spawn) {
 			} else if (hit != false && hit != this._id && players[hit].alive) {
 				for (var i in sockets) {
 					sockets[i].emit('removeObject', this.bullets[bullet].updatePack);
-					// sockets[i].emit('removeObject', players[hit].getUpdatePack());
+					sockets[i].emit('removeObject', players[hit].getUpdatePack());
 				}
 				players[hit].alive = false;
 				players[hit].x = players[hit].spawn.x;

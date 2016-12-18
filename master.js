@@ -3,7 +3,8 @@ var app = express();
 var serv = require('http').Server(app);
 var io = require('socket.io')(serv, {});
 
-var gameService = require('./server/gameService.js');
+var lobbyService = require('./server/lobbyService.js');
+
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/client/index.html');
@@ -19,14 +20,6 @@ serv.listen(process.env.PORT || 3000);
 
 io.sockets.on('connection', (socket) => {
 	socket.id = Math.random();
-	gameService.addSocket(socket);
-
-	const res = gameService.addPlayer(socket.id);
-	console.log(res);
-
-	if (res === "Player added!") {
-		gameService.sendInitPack(socket.id);
-		gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
-		gameService.getPlayer(socket.id).connect(socket);
-	}
+	lobbyService.addSocket(socket);
+	
 });

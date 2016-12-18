@@ -1,0 +1,57 @@
+var gameService = require('./gameService.js');
+
+var connections = {};
+
+var lobbyInfo = {
+    connectonsNum: 0,
+}
+
+function Connection(_id, socket) {
+	this._id = _id;
+    this.socket = socket;
+
+	this.connect = function(socket) {
+        socket.on('enterLobby', (data) => {
+            gameService.addSocket(socket);
+
+            const res = gameService.addPlayer(socket.id);
+
+            if (res === "Player added!") {
+            	gameService.sendInitPack(socket.id);
+            	gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
+            	gameService.getPlayer(socket.id).connect(socket);
+            }
+        });
+
+		socket.on('disconnect', () => {
+            lobbyInfo.connectonsNum--;
+            for (var conn in connections) {
+                connections[conn].socket.emit('lobbyInfo', lobbyInfo);
+            }
+			delete connections[socket.id];
+		});
+	}
+}
+
+var addSocket = (socket) => {
+    connections[socket.id] = new Connection(socket.id, socket);
+    connections[socket.id].connect(socket);
+    lobbyInfo.connectonsNum++;
+    for (var conn in connections) {
+        connections[conn].socket.emit('lobbyInfo', lobbyInfo);
+    }
+}
+
+var addPlayer = (socket) => {
+    const res = gameService.addPlayer(socket.id);
+
+	if (res === "Player added!") {
+		gameService.sendInitPack(socket.id);
+		gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
+		gameService.getPlayer(socket.id).connect(socket);
+	}
+}
+
+module.exports = {
+    addSocket,
+};

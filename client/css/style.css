@@ -1,0 +1,58 @@
+* {
+    font-family: Arial;
+}
+
+body {
+    background-color: #000000;
+}
+
+p {
+    color: #FFFFFF;
+}
+
+center {
+    display: block;
+    text-align: -webkit-center;
+}
+
+article {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    width: 95%;
+}
+
+#name_input {
+    outline:none;
+    box-shadow:none;
+    text-align: center;
+    font-size: 24px;
+    display: block;
+    margin: 10px;
+    padding: 5px 30px;
+    width: 350px;
+    background-color: #EEEEEE;
+    color: #444444;
+}
+
+#main_title {
+    margin-bottom: 30px;
+    color: #FFFF00;
+    font-size: 70px;
+    text-shadow: 1px 1px 2px #FFFF00, 0 0 1em #FFFF00, 0 0 0.2em #FFFF00;
+}
+
+#play_btn {
+    outline:none;
+    width: 100px;
+    font-size: 24px;
+    background-color: #FFFF00;
+    box-shadow: 1px 1px 2px #FFFF00, 0 0 1em #FFFF00, 0 0 0.2em #FFFF00;
+    border: 0px;
+    color: #000000;
+    font-weight: bold;
+}
+
+#ctx {
+}
