@@ -14,7 +14,7 @@ function Connection(_id, socket) {
         socket.on('enterLobby', (data) => {
             gameService.addSocket(socket);
 
-            const res = gameService.addPlayer(socket.id);
+            const res = gameService.addPlayer(socket.id, data.name);
 
             if (res === "Player added!") {
             	gameService.sendInitPack(socket.id);

@@ -63,9 +63,10 @@ function Bullet(init) {
 	}
 }
 
-function Player(_id, spawn) {
+function Player(_id, spawn, name) {
 	this._id = _id;
 	this.type = "player";
+	this.name = name;
 	this.spawn = spawn;
 	this.x = spawn.x;
 	this.y = spawn.y;
@@ -90,6 +91,7 @@ function Player(_id, spawn) {
 		return {
 			_id: this._id,
 			type: this.type,
+			name: this.name,
 			x: this.x,
 			y: this.y,
 			angle: this.angle,
@@ -102,6 +104,7 @@ function Player(_id, spawn) {
 		return {
 			_id: this._id,
 			type: this.type,
+			name: this.name,
 			x: this.x,
 			y: this.y,
 			angle: this.angle,
@@ -294,10 +297,10 @@ var getPlayer = (playerId) => {
     return players[playerId];
 }
 
-var addPlayer = (playerId) => {
+var addPlayer = (playerId, name) => {
 	for (var value of map.spawnpoints) {
 		if( value.free == true) {
-			players[playerId] = new Player(playerId, value);
+			players[playerId] = new Player(playerId, value, name);
 			found = true;
 			value.free = false;
 			return "Player added!";

@@ -56,3 +56,15 @@ article {
 
 #ctx {
 }
+
+#aside {
+    position: fixed;
+    top: 0;
+    bottom: 300;
+    left: 1000;
+    right: 0;
+}
+
+table {
+    
+}

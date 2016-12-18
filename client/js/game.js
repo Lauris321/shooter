@@ -25,6 +25,7 @@ function Bullet(init) {
 
 function Player(initPack) {
     this._id = initPack._id;
+    this.name = initPack.name;
     this.x = initPack.x;
     this.y = initPack.y;
     this.angle = initPack.angle;
@@ -64,12 +65,44 @@ function drawMap(ctx, map) {
     ctx.stroke();
 }
 
+function updateTable() {
+    document.getElementById('aside').innerHTML = '';
+    var table = document.createElement("table");
+    table.setAttribute('class', 'table table-bordered');
+    table.innerHTML = 
+    '<thead>' +
+        '<tr>' + 
+            '<th>#</th>' + 
+            '<th>Username</th>' + 
+            '<th>Points</th>' + 
+        '</tr>' + 
+    '</thead>'; 
+
+    '<tbody id="table_body">' +
+    '</tbody>';
+    
+    var tableBody = document.createElement('tbody');
+    tableBody.setAttribute('id', 'table_body');
+    var num = 1;
+    for (var i in players) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = `<th scope="row">${num}</th>` + 
+        `<th style="color: ${players[i].color}">${players[i].name}</th>` + 
+        `<th>${0}</th>`;
+        num++;
+        tableBody.appendChild(tr);
+    }
+    table.appendChild(tableBody);
+    document.getElementById('aside').appendChild(table);
+}
+
 socket.on('init', (data) => {
     map = data.map;
     players = [];
+    
     for (var i in data.players) {
         players[data.players[i]._id] = new Player(data.players[i]);
-
+        
         for(var bullet in data.players[i].bullets) {
             players[data.players[i]._id].bullets[bullet] = new Bullet({
                 _id: bullet,
@@ -79,10 +112,11 @@ socket.on('init', (data) => {
             });
         }
     }
+    updateTable();
     _id = data.yourId;
     document.getElementById('center').innerHTML = 
     '<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>';
-
+    
     ctx = document.getElementById("ctx").getContext("2d");
     ctx.fillStyle = "black";
     ctx.shadowBlur = 10;
@@ -155,8 +189,11 @@ socket.on('createObject', (data) => {
                 angle: data.angle,
             });
             break;
-        default:
+        case 'player':
             players[data._id] = new Player(data);
+            updateTable();
+            break;
+        default:
     }
 });
 
@@ -179,6 +216,7 @@ socket.on('removeObject', (data) => {
     switch(data.type) {
     case 'player':
         delete players[data._id];
+        updateTable();
         break;
     case 'bullet':
         delete players[data.owner].bullets[data._id];
