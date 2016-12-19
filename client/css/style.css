@@ -65,6 +65,7 @@ article {
     right: 0;
 }
 
-table {
-    
+table tr th {
+    padding: 5px;
+    color: #BBBBBB;
 }

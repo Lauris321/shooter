@@ -7,7 +7,7 @@ var players = {};
 var map = {};
 
 mongoService.mongoConnect(() => {
-    mongoService.getItemById('test', 'mapsCollection', (res) => {
+    mongoService.getItemById('Rooms', 'mapsCollection', (res) => {
 		map = res;
 	})
 });

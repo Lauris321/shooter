@@ -68,21 +68,13 @@ function drawMap(ctx, map) {
 function updateTable() {
     document.getElementById('aside').innerHTML = '';
     var table = document.createElement("table");
-    table.setAttribute('class', 'table table-bordered');
     table.innerHTML = 
-    '<thead>' +
-        '<tr>' + 
-            '<th>#</th>' + 
-            '<th>Username</th>' + 
-            '<th>Points</th>' + 
-        '</tr>' + 
-    '</thead>'; 
-
-    '<tbody id="table_body">' +
-    '</tbody>';
+    '<tr>' + 
+        '<th>#</th>' + 
+        '<th>Username</th>' + 
+        '<th>Points</th>' + 
+    '</tr>'; 
     
-    var tableBody = document.createElement('tbody');
-    tableBody.setAttribute('id', 'table_body');
     var num = 1;
     for (var i in players) {
         var tr = document.createElement("tr");
@@ -90,9 +82,8 @@ function updateTable() {
         `<th style="color: ${players[i].color}">${players[i].name}</th>` + 
         `<th>${0}</th>`;
         num++;
-        tableBody.appendChild(tr);
+        table.appendChild(tr);
     }
-    table.appendChild(tableBody);
     document.getElementById('aside').appendChild(table);
 }
 
@@ -115,7 +106,7 @@ socket.on('init', (data) => {
     updateTable();
     _id = data.yourId;
     document.getElementById('center').innerHTML = 
-    '<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>';
+    `<canvas id="ctx" width="${map.width}" height="${map.height}" style="border:1px solid #000000;"></canvas>`;
     
     ctx = document.getElementById("ctx").getContext("2d");
     ctx.fillStyle = "black";
@@ -157,13 +148,14 @@ socket.on('init', (data) => {
         const offTop = document.getElementById("ctx").offsetTop;
         mouseX = -players[_id].x + event.clientX - offLeft;
         mouseY = -players[_id].y + event.clientY - offTop;
+        
         socket.emit('keyPress', {inputId: 'mouseAngle', mouseX: mouseX, mouseY: mouseY});
     }
 
     setInterval(() => {
         ctx.fillStyle = '#000000';
-        ctx.clearRect(0, 0, 500, 500);
-        ctx.fillRect(0, 0, 500, 500);
+        ctx.clearRect(0, 0, map.width, map.height);
+        ctx.fillRect(0, 0, map.width, map.height);
 
         
         drawMap(ctx, map);
@@ -176,6 +168,7 @@ socket.on('init', (data) => {
         ctx.fillText("Ping: " + ping, 430, 7);
         ctx.fillText("Server: " + serverTime, 100, 7);
         ctx.fillText("Local: " + Date.now(), 100, 17);
+        ctx.fillText("Mouse(x, y) = " + (mouseX + players[_id].x) + ", " + (mouseY + players[_id].y), 400, 20);
     }, 1000/60);
 });
 
