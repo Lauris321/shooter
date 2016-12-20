@@ -131,6 +131,18 @@ function Player(_id, spawn, name) {
 			}
 		});
 
+		socket.on('sendMsgToServer', (data) => {
+			var playerName = this.name;
+			const message = {
+				name: this.name,
+				color: this.color,
+				message: data,
+			}
+			for (var i in sockets) {
+				sockets[i].emit('addToChat', message);
+			}
+		});
+
 		socket.on('disconnect', () => {
 			map.spawnpoints[players[this._id].spawn._id].free = true;
 			for (var i in sockets) {

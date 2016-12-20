@@ -59,13 +59,29 @@ article {
 
 #aside {
     position: fixed;
-    top: 0;
-    bottom: 300;
-    left: 1000;
-    right: 0;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
 }
 
 table tr th {
     padding: 5px;
     color: #BBBBBB;
+}
+
+#chat {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 300px;
+}
+
+#chat_input {
+    width: 100%;
+}
+
+#chat_text {
+    max-height: 150px;
+    overflow-y: scroll;
+    word-wrap: break-word;
 }

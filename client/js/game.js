@@ -6,6 +6,10 @@ var ping = 0;
 var serverTime = 0;
 var localTime = 0;
 
+var chatText;
+var chatInput;
+var chatForm;
+
 var ctx;
 var _id = '';
 var angle = 0;
@@ -66,8 +70,9 @@ function drawMap(ctx, map) {
 }
 
 function updateTable() {
-    document.getElementById('aside').innerHTML = '';
+    document.getElementById('players').innerHTML = '';
     var table = document.createElement("table");
+    table.setAttribute('id', 'player_list');
     table.innerHTML = 
     '<tr>' + 
         '<th>#</th>' + 
@@ -84,7 +89,19 @@ function updateTable() {
         num++;
         table.appendChild(tr);
     }
-    document.getElementById('aside').appendChild(table);
+    document.getElementById('players').appendChild(table);
+}
+
+function createChat() {
+    document.getElementById('chat').innerHTML = '';
+    var form = document.createElement("form");
+    form.setAttribute('id', 'chat_form');
+    form.innerHTML = 
+    '<div id="chat_text">' + 
+    '</div>' + 
+    '<input id="chat_input" type="text"></input>';
+    
+    document.getElementById('chat').appendChild(form);
 }
 
 socket.on('init', (data) => {
@@ -104,6 +121,23 @@ socket.on('init', (data) => {
         }
     }
     updateTable();
+    createChat();
+
+	var chatText = document.getElementById('chat_text');
+	var chatInput = document.getElementById('chat_input');
+	var chatForm = document.getElementById('chat_form');
+
+    chatForm.onsubmit = (e) => {
+        e.preventDefault();
+        socket.emit('sendMsgToServer', chatInput.value);
+        chatInput.value = '';
+    }
+
+    socket.on('addToChat', (data) => {
+        chatText.innerHTML += 
+        `<div id="message"><b style="float: left; color: ${data.color}">${data.name}: &nbsp </b><p>${data.message}</p></div>`;
+    });
+
     _id = data.yourId;
     document.getElementById('center').innerHTML = 
     `<canvas id="ctx" width="${map.width}" height="${map.height}" style="border:1px solid #000000;"></canvas>`;
@@ -165,10 +199,10 @@ socket.on('init', (data) => {
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#ffff00';
         ctx.font="10px Arial";
-        ctx.fillText("Ping: " + ping, 430, 7);
-        ctx.fillText("Server: " + serverTime, 100, 7);
-        ctx.fillText("Local: " + Date.now(), 100, 17);
-        ctx.fillText("Mouse(x, y) = " + (mouseX + players[_id].x) + ", " + (mouseY + players[_id].y), 400, 20);
+        // ctx.fillText("Ping: " + ping, 430, 7);
+        // ctx.fillText("Server: " + serverTime, 100, 7);
+        // ctx.fillText("Local: " + Date.now(), 100, 17);
+        // ctx.fillText("Mouse(x, y) = " + (mouseX + players[_id].x) + ", " + (mouseY + players[_id].y), 400, 20);
     }, 1000/60);
 });
 
