@@ -14,7 +14,31 @@
 		
 	</head>
 	<body>
+		<div id="myModal" class="modal">
+
+		<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<span class="close">&times;</span>
+					<h2>Registration</h2>
+				</div>
+				<div class="modal-body">
+					<form id="reg_form">
+						<div class="form-group">
+							<label for="user_input">Username</label>
+							<input type="text" class="form-control" id="user_input" placeholder="Username" required>
+						</div>
+						<div class="form-group">
+							<label for="pass_input">Password</label>
+							<input type="password" class="form-control" id="pass_input" placeholder="Password" required>
+						</div>
+						<button type="submit" class="btn btn-default" id="reg_sub">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
 		<p id="conn_num"></p>
+		<button class="btn btn-default" id="reg_button">register</button>
 		<center id="center">
 			<article>
 				<div id="ctx"></div>
@@ -28,4 +52,6 @@
 			<div id="chat"></div>
 		</aside>
 	</body>
+	<script src="client/js/modal.js"></script>
+	<script src="client/js/user.js"></script>
 </html>

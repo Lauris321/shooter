@@ -3,31 +3,15 @@ const url = 'mongodb://testuser:testuser@ds021326.mlab.com:21326/shooterdb';
 
 var collections;
 
-// var map = {
-// 	_id: 'test',
-// 	width: 500,
-// 	height: 500,
-// 	walls: [
-// 		{x1: 0, y1: 0, x2: 500, y2: 0},
-// 		{x1: 500, y1: 0, x2: 500, y2: 500},
-// 		{x1: 500, y1: 500, x2: 0, y2: 500},
-// 		{x1: 0, y1: 500, x2: 0, y2: 0},
-// 		{x1: 0, y1: 250, x2: 200, y2: 250},
-// 	],
-// };
-
 const mongoConnect = (callback) => {
     MongoClient.connect(url, (err, db) => {
         collections = {
             mapsCollection: db.collection('mapsCollection'),
+            usersCollection: db.collection('usersCollection'),
         };
         callback();
     });
 };
-
-// mongoConnect(() => {
-//     console.log('Connected to the database.');
-// });
 
 const insertItem = (item, usedCollection) => {
     collections[usedCollection].insert(item);
@@ -40,8 +24,47 @@ const getItemById = (id, usedCollection, callback) => {
     });
 };
 
+const setAccessToken = (newToken, itemId, usedCollection) => {
+    collections[usedCollection].update(
+        { _id: itemId },
+        {
+            $set: {
+                access_token: newToken,
+                timeStamp: new Date().toISOString(),
+            },
+        }
+    );
+};
+
+const setTimestamp = (username, usedCollection) => {
+    collections[usedCollection].update(
+        { _id: username },
+        {
+            $set: {
+                timeStamp: new Date().toISOString(),
+            },
+        }
+    );
+};
+
+const clearToken = (username, usedCollection, callback) => {
+    collections[usedCollection].update(
+        { _id: username },
+        {
+            $set: {
+                access_token: undefined,
+                timeStamp: undefined,
+            },
+        }
+    );
+    callback();
+};
+
 module.exports = {
     mongoConnect,
     insertItem,
     getItemById,
+    setAccessToken,
+    setTimestamp,
+    clearToken,
 };

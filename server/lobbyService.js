@@ -1,4 +1,5 @@
 var gameService = require('./gameService.js');
+var users = require('./userService.js');
 
 var connections = {};
 
@@ -21,6 +22,13 @@ function Connection(_id, socket) {
             	gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
             	gameService.getPlayer(socket.id).connect(socket);
             }
+        });
+
+        socket.on('register', (data) => {
+            console.log(data);
+            users.register(data, (res) => {
+                
+            });
         });
 
 		socket.on('disconnect', () => {
