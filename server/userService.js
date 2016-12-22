@@ -60,7 +60,7 @@ const timeDifference = (tStamp) => {
 
 const authenticateUser = (token, userId, callback) => {
     mongoDb.getItemById(userId, 'usersCollection', (user) => {
-        let auth;
+        var auth;
         if (user == undefined || token == undefined) {
             auth = undefined;
         } else if (token === user.access_token) {
