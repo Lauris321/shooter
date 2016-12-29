@@ -24,5 +24,4 @@ serv.listen(process.env.PORT || 3000);
 io.sockets.on('connection', (socket) => {
 	socket.id = Math.random();
 	lobbyService.addSocket(socket);
-	
 });

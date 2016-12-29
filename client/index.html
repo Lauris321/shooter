@@ -14,12 +14,12 @@
 		
 	</head>
 	<body>
-		<div id="myModal" class="modal">
+		<div id="regModal" class="modal">
 
-		<!-- Modal content -->
+		<!-- Registration modal content -->
 			<div class="modal-content">
 				<div class="modal-header">
-					<span class="close">&times;</span>
+					<span id="reg_close">&times;</span>
 					<h2>Registration</h2>
 				</div>
 				<div class="modal-body">
@@ -37,8 +37,33 @@
 				</div>
 			</div>
 		</div>
+
+		<div id="logModal" class="modal">
+
+		<!-- Registration modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<span id="log_close">&times;</span>
+					<h2>Login</h2>
+				</div>
+				<div class="modal-body">
+					<form id="log_form">
+						<div class="form-group">
+							<label for="user_input">Username</label>
+							<input type="text" class="form-control" id="user_input" placeholder="Username" required>
+						</div>
+						<div class="form-group">
+							<label for="pass_input">Password</label>
+							<input type="password" class="form-control" id="pass_input" placeholder="Password" required>
+						</div>
+						<button type="submit" class="btn btn-default" id="log_sub">Login</button>
+					</form>
+				</div>
+			</div>
+		</div>
 		<p id="conn_num"></p>
-		<button class="btn btn-default" id="reg_button">register</button>
+		<button class="btn btn-default" id="reg_button">Register</button>
+		<button class="btn btn-default" id="log_button">Login</button>
 		<center id="center">
 			<article>
 				<div id="ctx"></div>

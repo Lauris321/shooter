@@ -8,12 +8,13 @@ const register = (request, reply) => {
         } else {
             hashingService.hashString(request.password, (hashedPassword) => {
                 const userData = {
-                    _id: request.userName,
+                    _id: request.name,
                     password: hashedPassword,
                     auth: 'admin',
                     access_token: undefined,
                     timeStamp: undefined,
                 };
+                console.log(userData);
                 mongoDb.insertItem(userData, 'usersCollection');
                 reply({ message: 'Registration successful' });
             });
@@ -22,7 +23,7 @@ const register = (request, reply) => {
 };
 
 const login = (request, reply) => {
-    mongoDb.getItemById(request.payload.username, 'usersCollection', (item) => {
+    mongoDb.getItemById(request.payload.user, 'usersCollection', (item) => {
         if (item === undefined) {
             reply('Username does not exist');
         } else {
@@ -35,7 +36,7 @@ const login = (request, reply) => {
                     };
                     if (item.access_token == undefined) {
                         hashingService.createToken(request.payload.username, (hToken) => {
-                            mongoDb.setAccessToken(hToken, request.payload.username,
+                            mongoDb.setAccessToken(hToken, request.payload.user,
                                 'usersCollection');
                             returnData.access_token = hToken;
                             reply(returnData);

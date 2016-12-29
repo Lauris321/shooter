@@ -25,9 +25,8 @@ function Connection(_id, socket) {
         });
 
         socket.on('register', (data) => {
-            console.log(data);
             users.register(data, (res) => {
-                
+                console.log(res);
             });
         });
 

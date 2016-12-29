@@ -132,7 +132,7 @@ table tr th {
 }
 
 /* The Close Button */
-.close {
+#reg_close, #log_close {
     color: white;
     float: right;
     font-size: 28px;
