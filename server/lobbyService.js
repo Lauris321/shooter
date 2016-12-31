@@ -24,6 +24,12 @@ function Connection(_id, socket) {
             }
         });
 
+        socket.on('login', (data) => {
+            users.login(data, (res) => {
+                socket.emit('loginData', res);
+            });
+        });
+
         socket.on('register', (data) => {
             users.register(data, (res) => {
                 console.log(res);

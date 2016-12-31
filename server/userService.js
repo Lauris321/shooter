@@ -23,11 +23,12 @@ const register = (request, reply) => {
 };
 
 const login = (request, reply) => {
-    mongoDb.getItemById(request.payload.user, 'usersCollection', (item) => {
+    console.log(request);
+    mongoDb.getItemById(request.name, 'usersCollection', (item) => {
         if (item === undefined) {
             reply('Username does not exist');
         } else {
-            hashingService.checkMatch(request.payload.password, item.password, (eq) => {
+            hashingService.checkMatch(request.password, item.password, (eq) => {
                 if (eq) {
                     const returnData = {
                         message: 'Logged in!',
@@ -35,8 +36,8 @@ const login = (request, reply) => {
                         access_token: undefined,
                     };
                     if (item.access_token == undefined) {
-                        hashingService.createToken(request.payload.username, (hToken) => {
-                            mongoDb.setAccessToken(hToken, request.payload.user,
+                        hashingService.createToken(request.name, (hToken) => {
+                            mongoDb.setAccessToken(hToken, request.name,
                                 'usersCollection');
                             returnData.access_token = hToken;
                             reply(returnData);
