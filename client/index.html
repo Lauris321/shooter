@@ -22,7 +22,7 @@
 					<span class="close" id="reg_close">&times;</span>
 					<h2>Registration</h2>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body" id="reg_modal_body">
 					<form id="reg_form">
 						<div class="form-group">
 							<label for="user_input">Username</label>
@@ -46,7 +46,8 @@
 					<span class="close" id="log_close">&times;</span>
 					<h2>Login</h2>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body" id="log_modal_body">
+					<span id="log_answer"></span>
 					<form id="log_form">
 						<div class="form-group">
 							<label for="log_user_input">Username</label>
@@ -62,8 +63,10 @@
 			</div>
 		</div>
 		<p id="conn_num"></p>
+		<p id="username_span"></p>
 		<button class="btn btn-default" id="reg_button">Register</button>
 		<button class="btn btn-default" id="log_button">Login</button>
+		<button class="btn btn-default" id="logout_button">Log out</button>
 		<center id="center">
 			<article>
 				<div id="ctx"></div>

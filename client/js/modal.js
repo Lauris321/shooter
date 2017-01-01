@@ -1,9 +1,13 @@
 var regModal = document.getElementById('regModal');
 var logModal = document.getElementById('logModal');
+var logModal = document.getElementById('logModal');
 
 // Get the button that opens the modal
 var regBtn = document.getElementById("reg_button");
 var logBtn = document.getElementById("log_button");
+var logoutBtn = document.getElementById("logout_button");
+
+var usernameSpan = document.getElementById('username_span');
 
 // Get the <span> element that closes the modal
 var regSpan = document.getElementById("reg_close");
@@ -16,6 +20,15 @@ regBtn.onclick = function() {
 
 logBtn.onclick = function() {
     logModal.style.display = "block";
+}
+
+logoutBtn.onclick = function() {
+    localStorage.setItem("username", "");
+    localStorage.setItem("access_token", "");
+    regBtn.style.display = "block";
+    logBtn.style.display = "block";
+    logoutBtn.style.display = "none";
+    usernameSpan.innerText = "";
 }
 
 // When the user clicks on <span> (x), close the modal

@@ -162,3 +162,11 @@ table tr th {
     background-color: #555555;
     color: white;
 }
+
+#log_answer {
+    color: #FF0000;
+}
+
+#reg_button #log_button #logout_button {
+    display: none;
+}

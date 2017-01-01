@@ -32,7 +32,9 @@ function Connection(_id, socket) {
 
         socket.on('register', (data) => {
             users.register(data, (res) => {
-                console.log(res);
+                users.login(data, (loginRes) => {
+                    socket.emit('loginData', loginRes);
+                });
             });
         });
 

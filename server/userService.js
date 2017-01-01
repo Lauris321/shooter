@@ -26,7 +26,7 @@ const login = (request, reply) => {
     console.log(request);
     mongoDb.getItemById(request.name, 'usersCollection', (item) => {
         if (item === undefined) {
-            reply('Username does not exist');
+            reply({message: 'Username does not exist'});
         } else {
             hashingService.checkMatch(request.password, item.password, (eq) => {
                 if (eq) {
