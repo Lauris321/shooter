@@ -30,6 +30,18 @@ function Connection(_id, socket) {
             });
         });
 
+        socket.on('authenticate', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                socket.emit('authenticateRes', res);
+            });
+        });
+
+        socket.on('mapCreator', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                socket.emit('mapCreatorInit', res);
+            });
+        });
+
         socket.on('register', (data) => {
             users.register(data, (res) => {
                 users.login(data, (loginRes) => {

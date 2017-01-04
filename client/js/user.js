@@ -1,10 +1,9 @@
 var logForm = document.getElementById('log_form');
 var logAnswer = document.getElementById('log_answer');
+var header = document.getElementById('main_header');
 
 var username = localStorage.getItem("username");
 var accessToken = localStorage.getItem("access_token");
-
-
 
 if(username === "" || accessToken === "") {
     logoutBtn.style.display = "none";
@@ -12,6 +11,7 @@ if(username === "" || accessToken === "") {
     regBtn.style.display = "none";
     logBtn.style.display = "none";
     usernameSpan.innerHTML = "User: " + username;
+    socket.emit('authenticate', {name: username, accessToken: accessToken});
 }
 
 logForm.onsubmit = (e) => {
@@ -30,16 +30,43 @@ regForm.onsubmit = (e) => {
     regModal.style.display = "none";
 }
 
+var mapCreatorForm = document.getElementById('map_creator_form');
+mapCreatorForm.onsubmit = (e) => {
+    e.preventDefault();
+    var mapName = document.getElementById('map_name').value;
+    var width = document.getElementById('map_width').value;
+    var height = document.getElementById('map_height').value;
+    // socket.emit('mapCreator', {name: username, accessToken: accessToken});
+    mapCreatorModal.style.display = "none";
+    mapCreatorInit({name: mapName, width: width, height: height});
+}
+
 socket.on('loginData', (data) => {
     if(data.message === 'Logged in!') {
         localStorage.setItem("username", data.user);
         localStorage.setItem("access_token", data.access_token);
+        username = localStorage.getItem("username");
+        accessToken = localStorage.getItem("access_token");
+
         logModal.style.display = "none";
         regBtn.style.display = "none";
         logBtn.style.display = "none";
         logoutBtn.style.display = "block";
         usernameSpan.innerText = username;
+        socket.emit('authenticate', {name: username, accessToken: accessToken});
     } else {
         logAnswer.innerText = data.message;
     }
 });
+
+socket.on('authenticateRes', (data) => {
+    console.log(data);
+    if (data === 'admin') {
+        mapCreatorBtn.setAttribute('class', 'btn btn-default');
+        mapCreatorBtn.setAttribute('id', 'map_creator_button');
+        mapCreatorBtn.innerText = 'Map Creator';
+
+        header.appendChild(mapCreatorBtn);
+    }
+});
+

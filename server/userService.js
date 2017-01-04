@@ -14,7 +14,6 @@ const register = (request, reply) => {
                     access_token: undefined,
                     timeStamp: undefined,
                 };
-                console.log(userData);
                 mongoDb.insertItem(userData, 'usersCollection');
                 reply({ message: 'Registration successful' });
             });
@@ -23,7 +22,6 @@ const register = (request, reply) => {
 };
 
 const login = (request, reply) => {
-    console.log(request);
     mongoDb.getItemById(request.name, 'usersCollection', (item) => {
         if (item === undefined) {
             reply({message: 'Username does not exist'});
@@ -60,7 +58,7 @@ const timeDifference = (tStamp) => {
     return dif / 60000;
 };
 
-const authenticateUser = (token, userId, callback) => {
+const authenticateUser = (userId, token, callback) => {
     mongoDb.getItemById(userId, 'usersCollection', (user) => {
         var auth;
         if (user == undefined || token == undefined) {
