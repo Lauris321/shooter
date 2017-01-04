@@ -2,13 +2,15 @@ var creatorMap = {};
 var players = [];
 
 var wallForm = document.createElement("form");
+var spawnForm = document.createElement("form");
 
+var mapCreatorSubmit = document.createElement("button");
 
 
 function createMapCreatorUI() {
     var aside = document.getElementById('aside');
-
-    var form = `
+    aside.innerHTML = '';
+    var wallFormHtml = `
     <form id="wall_form">
         <label>Wall position</label>
         <div class="input-group">
@@ -25,8 +27,28 @@ function createMapCreatorUI() {
         <button type="submit" class="btn btn-default" id="add_wall_sub">Add Wall</button>
     </form>`;
 
-    aside.innerHTML += form;
+    var spawnFormHtml = `
+    <form id="spawn_form">
+        <label>Spawn position</label>
+        <div class="input-group">
+            <input type="number" class="form-control" id="spawn_x" placeholder="x" required>
+            <span class="input-group-addon">-</span>
+            <input type="number" class="form-control" id="spawn_y" placeholder="y" required>
+        </div>
+        <div class="input-group">
+            <label>Spawn color</label>
+            <input type="color" class="form-control" name="spawn_color" id="spawn_color" value="#ff0000">
+        </div>
+        <button type="submit" class="btn btn-default" id="add_spawn_sub">Add Spawn</button>
+    </form>`;
+    
+    aside.innerHTML += wallFormHtml;
+    aside.innerHTML += spawnFormHtml;
+    aside.innerHTML += '<button class="btn btn-default" id="map_submit_button">Submit Map</button>';
+
     wallForm = document.getElementById('wall_form');
+    spawnForm = document.getElementById('spawn_form');
+    mapCreatorSubmit = document.getElementById('map_submit_button');
 
     wallForm.onsubmit = (e) => {
         e.preventDefault();
@@ -41,6 +63,25 @@ function createMapCreatorUI() {
             "h": height
         });
     }
+
+    spawnForm.onsubmit = (e) => {
+        e.preventDefault();
+        var x = document.getElementById('spawn_x').value;
+        var y = document.getElementById('spawn_y').value;
+        var color = document.getElementById('spawn_color').value;
+        alert(color);
+        creatorMap.spawnpoints.push({
+            "_id": 2,
+            "x": x,
+            "y": y,
+            "color": color,
+            "free": true
+        });
+    }
+
+    mapCreatorSubmit.onclick = function() {
+        socket.emit('addMap', {map: creatorMap, name: username, accessToken: accessToken});
+    }
 }
 
 function mapCreatorInit(data) {
@@ -48,6 +89,22 @@ function mapCreatorInit(data) {
         "_id": data.name,
         "width": data.width,
         "height": data.height,
+        "spawnpoints": [
+            {
+                "_id": 0,
+                "x": 100,
+                "y": 100,
+                "color": "#0000FF",
+                "free": true
+            },
+            {
+                "_id": 1,
+                "x": 400,
+                "y": 400,
+                "color": "#FF0000",
+                "free": true
+            }
+        ],
         "walls": [
             {
                 "x": 0,
@@ -101,7 +158,17 @@ function mapCreatorInit(data) {
                 creatorMap['walls'].splice(creatorMap['walls'].indexOf(wall), 1);
             }
         }
-        socket.emit('keyPress', {inputId: 'attack', state: false});
+
+        for(var spawn of creatorMap['spawnpoints']) {
+            var dx = spawn.x - mouseX;
+            var dy = spawn.y - mouseY;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 10) {
+                creatorMap['spawnpoints'].splice(creatorMap['spawnpoints'].indexOf(spawn), 1);
+            }
+            return false;
+        }
     }
 
     setInterval(() => {

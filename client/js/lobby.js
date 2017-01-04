@@ -7,7 +7,6 @@ function enterLobby() {
     socket.emit('enterLobby', {name: chosenName});
 }
 
-
 socket.on('lobbyInfo', (data) => {
     lobbyInfo = data;
     

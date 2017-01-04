@@ -66,6 +66,14 @@ function drawMap(ctx, map) {
     for(var wall in map.walls) {
         ctx.fillRect(map.walls[wall].x, map.walls[wall].y, map.walls[wall].w, map.walls[wall].h);
     }
+
+    for(var spawn of map.spawnpoints) {
+        ctx.beginPath();
+        ctx.arc(spawn.x, spawn.y, 10, 0, 2 * Math.PI, false);
+        ctx.fillStyle = spawn.color;
+        ctx.fill();
+        ctx.stroke();
+    }
     ctx.stroke();
 }
 

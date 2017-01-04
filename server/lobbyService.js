@@ -1,5 +1,6 @@
 var gameService = require('./gameService.js');
 var users = require('./userService.js');
+const mongoDb = require('./mongodbService.js');
 
 var connections = {};
 
@@ -39,6 +40,15 @@ function Connection(_id, socket) {
         socket.on('mapCreator', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 socket.emit('mapCreatorInit', res);
+            });
+        });
+
+        socket.on('addMap', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    console.log(data);
+                    mongoDb.insertItem(data.map, 'mapsCollection');
+                }
             });
         });
 
