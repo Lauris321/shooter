@@ -24,6 +24,14 @@ const getItemById = (id, usedCollection, callback) => {
     });
 };
 
+const getAllItems = (usedCollection, callback) => {
+    while(collections === undefined){}
+    collections[usedCollection].find().toArray((err, res) => {
+        console.log(res);
+        callback(res);
+    });
+};
+
 const setAccessToken = (newToken, itemId, usedCollection) => {
     collections[usedCollection].update(
         { _id: itemId },
@@ -64,6 +72,7 @@ module.exports = {
     mongoConnect,
     insertItem,
     getItemById,
+    getAllItems,
     setAccessToken,
     setTimestamp,
     clearToken,

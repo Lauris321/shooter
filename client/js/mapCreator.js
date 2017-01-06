@@ -69,9 +69,8 @@ function createMapCreatorUI() {
         var x = document.getElementById('spawn_x').value;
         var y = document.getElementById('spawn_y').value;
         var color = document.getElementById('spawn_color').value;
-        alert(color);
         creatorMap.spawnpoints.push({
-            "_id": 2,
+            "_id": creatorMap.spawnpoints.length,
             "x": x,
             "y": y,
             "color": color,

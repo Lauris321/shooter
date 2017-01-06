@@ -10,6 +10,6 @@ function enterLobby() {
 socket.on('lobbyInfo', (data) => {
     lobbyInfo = data;
     
-    document.getElementById('conn_num').innerHTML = 'Number of connections: ' + lobbyInfo.connectonsNum;
+    // document.getElementById('conn_num').innerHTML = 'Number of connections: ' + lobbyInfo.connectonsNum;
 });
 

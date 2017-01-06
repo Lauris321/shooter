@@ -5,6 +5,7 @@ var sockets = {};
 var players = {};
 
 var map = {};
+var tableData = {};
 
 mongoService.mongoConnect(() => {
     mongoService.getItemById('Rooms', 'mapsCollection', (res) => {
@@ -21,6 +22,44 @@ var deltaTimer = {
 	},
 };
 
+function restartGame() {
+	for(player in players) {
+		players[player].x = players[player].spawn.x;
+		players[player].y = players[player].spawn.y;
+		players[player].alive = true
+		for (var i in sockets) {
+			sockets[i].emit('restartGame', {});
+		}
+		players[player].bullets = {};
+		players[player].score = 0;
+		players[player].respawnTimer = {
+			diedAt: 0,
+			respawnTime: 5000,
+		};
+		players[player].shootTimer = {
+			lastShot: 0,
+			shootingRate: 300,
+		};
+
+		players[player].pressingLeft = false;
+		players[player].pressingRight = false;
+		players[player].pressingUp = false;
+		players[player].pressingDown = false;
+		players[player].pressingAttack = false;
+
+		tableData[players[player]._id] = {playerId: players[player]._id, score: 0};
+	}
+	for (var i in sockets) {
+		sockets[i].emit('updateTable', tableData);
+	}
+};
+
+function announceWinner(init) {
+	restartGame();
+};
+
+
+
 function Bullet(init) {
 	this._id = init._id;
 	this.owner = init.owner;
@@ -29,7 +68,7 @@ function Bullet(init) {
 	this.y = init.y;
 	this.speedX = Math.cos(init.angle / 180 * Math.PI) * 800;
 	this.speedY = Math.sin(init.angle / 180 * Math.PI) * 800;
-	this.angle = init.angle
+	this.angle = init.angle;
 
 	this.updatePack = {
 		_id: this._id,
@@ -82,6 +121,11 @@ function Player(_id, spawn, name) {
 	this.maxSpd = 200;	// px/s
 	this.color = spawn.color;
 	this.bullets = {};
+	this.score = 0;
+	this.respawnTimer = {
+		diedAt: 0,
+		respawnTime: 5000,
+	};
 	this.shootTimer = {
 		lastShot: 0,
 		shootingRate: 300, // ms/bullet
@@ -110,10 +154,15 @@ function Player(_id, spawn, name) {
 			angle: this.angle,
 			color: this.color,
 			bullets: this.bullets,
+			alive: this.alive,
 		}
 	}
 
 	this.connect = function(socket) {
+		tableData[this._id] = {playerId: this._id, score: 0};
+		for (var i in sockets) {
+			sockets[i].emit('updateTable', tableData);
+		}
 		socket.on('keyPress', (data) => {
 			if(data.inputId === 'left')
 				players[socket.id].pressingLeft = data.state;
@@ -145,6 +194,7 @@ function Player(_id, spawn, name) {
 
 		socket.on('disconnect', () => {
 			map.spawnpoints[players[this._id].spawn._id].free = true;
+			delete tableData[this._id];
 			for (var i in sockets) {
 				sockets[i].emit('removeObject', this.getUpdatePack());
 			}
@@ -222,6 +272,10 @@ function Player(_id, spawn, name) {
 			this.y = newY;
 			
 			this.angle = Math.atan2(this.mouseY, this.mouseX) / Math.PI * 180;
+		} else {
+			if(this.respawnTimer.diedAt + this.respawnTimer.respawnTime <= Date.now()) {
+				this.alive = true;
+			}
 		}
 
 		for(var bullet in this.bullets) {
@@ -232,14 +286,40 @@ function Player(_id, spawn, name) {
 				}
 				delete this.bullets[bullet];
 			} else if (hit != false && hit != this._id && players[hit].alive) {
+				players[hit].alive = false;
+				this.score++;
+
+				tableData[this._id].score = this.score;
+
+				var sortable = [];
+				for (var player in tableData)
+					sortable.push([player, tableData[player].score])
+
+				sortable.sort(function(a, b) {
+					return b[1] - a[1];
+				});
+
+				tableData = {};
+
+				for (var player of sortable)
+					tableData[player[0]] = {playerId: player[0], score: player[1]};
+
+				players[hit].respawnTimer.diedAt = Date.now();
+
 				for (var i in sockets) {
 					sockets[i].emit('removeObject', this.bullets[bullet].updatePack);
-					sockets[i].emit('removeObject', players[hit].getUpdatePack());
+					for (var i in sockets) {
+						sockets[i].emit('updateTable', tableData);
+					}
 				}
 				players[hit].alive = false;
 				players[hit].x = players[hit].spawn.x;
 				players[hit].y = players[hit].spawn.y;
 				delete this.bullets[bullet];
+				if(this.score >= 10) {
+					announceWinner();
+					break;
+				}
 			} else {
 				this.bullets[bullet].update(delta);
 			}

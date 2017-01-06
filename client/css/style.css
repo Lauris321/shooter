@@ -64,9 +64,13 @@ article {
     right: 0px;
 }
 
-table tr th {
+table tr th td {
     padding: 5px;
     color: #BBBBBB;
+}
+
+.table-hover>tbody>tr:hover {
+    background-color: #222222;
 }
 
 #chat {
@@ -90,6 +94,16 @@ table tr th {
     color: #FF0000;
 }
 
-#reg_button #log_button #logout_button {
+#reg_button #log_button #logout_button #all_maps_button {
     display: none;
+}
+
+#username_span {
+    font-weight: bold;
+    display: inline-block;
+    color: #FFFFFF;
+}
+
+#maps_list {
+    color: #EEEEEE;
 }

@@ -1,6 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
+var mongoDb = require('./mongodbService.js');
+
+var getMainPage = () => {
+    var mainPage = `<head>
 		<title>Vector Arena</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
 		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -119,5 +120,9 @@
 	</body>
 	<script src="client/js/modal.js"></script>
 	
-	<script src="client/js/lists.js"></script>
-</html>
+	<script src="client/js/lists.js"></script>`;
+}
+
+module.exports = {
+    getMainPage,
+};

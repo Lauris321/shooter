@@ -27,11 +27,12 @@ logBtn.onclick = function() {
 logoutBtn.onclick = function() {
     localStorage.setItem("username", "");
     localStorage.setItem("access_token", "");
-    regBtn.style.display = "block";
-    logBtn.style.display = "block";
+    regBtn.style.display = "inline-block";
+    logBtn.style.display = "inline-block";
     logoutBtn.style.display = "none";
     mapCreatorBtn.style.display = "none";
     usernameSpan.innerText = "";
+    location.reload();
 }
 
 mapCreatorBtn.onclick = function() {

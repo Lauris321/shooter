@@ -4,14 +4,23 @@ var header = document.getElementById('main_header');
 
 var username = localStorage.getItem("username");
 var accessToken = localStorage.getItem("access_token");
+var authorisation = '';
 
-if(username === "" || accessToken === "") {
-    logoutBtn.style.display = "none";
-} else {
-    regBtn.style.display = "none";
-    logBtn.style.display = "none";
-    usernameSpan.innerHTML = "User: " + username;
-    socket.emit('authenticate', {name: username, accessToken: accessToken});
+var allMapsBtn = document.getElementById("all_maps_button");
+
+function initUser() {
+    if(username == "" || accessToken == "" ||
+    username == undefined || accessToken == undefined ||
+    username == null || accessToken == null) {
+        logoutBtn.style.display = "none";
+    } else {
+        regBtn.style.display = "none";
+        logBtn.style.display = "none";
+        usernameSpan.innerHTML = "User: " + username;
+
+        socket.emit('authenticate', {name: username, accessToken: accessToken});
+    }
+
 }
 
 logForm.onsubmit = (e) => {
@@ -51,7 +60,8 @@ socket.on('loginData', (data) => {
         logModal.style.display = "none";
         regBtn.style.display = "none";
         logBtn.style.display = "none";
-        logoutBtn.style.display = "block";
+        logoutBtn.style.display = "inline-block";
+        mapCreatorBtn.style.display = "inline-block";
         usernameSpan.innerText = username;
         socket.emit('authenticate', {name: username, accessToken: accessToken});
     } else {

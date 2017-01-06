@@ -46,8 +46,17 @@ function Connection(_id, socket) {
         socket.on('addMap', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin') {
-                    console.log(data);
                     mongoDb.insertItem(data.map, 'mapsCollection');
+                }
+            });
+        });
+
+        socket.on('getAllMaps', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    mongoDb.getAllItems('mapsCollection', (all) => {
+                        socket.emit('allMapsRes', all);
+                    });
                 }
             });
         });

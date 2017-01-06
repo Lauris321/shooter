@@ -35,6 +35,7 @@ function Player(initPack) {
     this.angle = initPack.angle;
     this.color = initPack.color;
     this.bullets = initPack.bullets;
+    this.alive = true;
 
     this.draw = function(ctx) {
         ctx.strokeStyle = this.color;
@@ -66,18 +67,21 @@ function drawMap(ctx, map) {
     for(var wall in map.walls) {
         ctx.fillRect(map.walls[wall].x, map.walls[wall].y, map.walls[wall].w, map.walls[wall].h);
     }
-
+    ctx.stroke();
     for(var spawn of map.spawnpoints) {
         ctx.beginPath();
+        ctx.strokeStyle = spawn.color;
+        ctx.lineWidth = 0;
         ctx.arc(spawn.x, spawn.y, 10, 0, 2 * Math.PI, false);
         ctx.fillStyle = spawn.color;
         ctx.fill();
+        // ctx.lineWidth = 5;
+        // ctx.strokeStyle = '#003300';
         ctx.stroke();
     }
-    ctx.stroke();
 }
 
-function updateTable() {
+function updateTable(data) {
     document.getElementById('players').innerHTML = '';
     var table = document.createElement("table");
     table.setAttribute('id', 'player_list');
@@ -89,11 +93,11 @@ function updateTable() {
     '</tr>'; 
     
     var num = 1;
-    for (var i in players) {
+    for(var player in data) {
         var tr = document.createElement("tr");
-        tr.innerHTML = `<th scope="row">${num}</th>` + 
-        `<th style="color: ${players[i].color}">${players[i].name}</th>` + 
-        `<th>${0}</th>`;
+        tr.innerHTML = `<th scope="row">${num}</th>
+        <th style="color: ${players[player].color}">${players[player].name}</th>
+        <th>${data[player].score}</th>`;
         num++;
         table.appendChild(tr);
     }
@@ -105,9 +109,16 @@ function createChat() {
     var form = document.createElement("form");
     form.setAttribute('id', 'chat_form');
     form.innerHTML = 
-    '<div id="chat_text">' + 
-    '</div>' + 
-    '<input id="chat_input" type="text"></input>';
+    `<div id="chat_text">
+    </div>`;
+
+    if(username == "" || accessToken == "" ||
+    username == undefined || accessToken == undefined ||
+    username == null || accessToken == null) {
+        form.innerHTML += `Login to write messages`;
+    } else {
+        form.innerHTML += `<input id="chat_input" type="text"></input>`;
+    }
     
     document.getElementById('chat').appendChild(form);
 }
@@ -115,6 +126,8 @@ function createChat() {
 socket.on('init', (data) => {
     map = data.map;
     players = [];
+
+    mapCreatorBtn.style.display = 'none';
     
     for (var i in data.players) {
         players[data.players[i]._id] = new Player(data.players[i]);
@@ -128,7 +141,7 @@ socket.on('init', (data) => {
             });
         }
     }
-    updateTable();
+    // updateTable();
     createChat();
 
 	var chatText = document.getElementById('chat_text');
@@ -202,7 +215,9 @@ socket.on('init', (data) => {
         
         drawMap(ctx, map);
         for (var i in players) {
-            players[i].draw(ctx);
+            if(players[i].alive) {
+                players[i].draw(ctx);
+            }
         }
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#ffff00';
@@ -237,6 +252,7 @@ socket.on('update', (data) => {
         players[data.players[i]._id].setPos(data.players[i].x, data.players[i].y);
         players[data.players[i]._id].angle = data.players[i].angle;
         players[data.players[i]._id].color = data.players[i].color;
+        players[data.players[i]._id].alive = data.players[i].alive;
 
         for(bullet in players[data.players[i]._id].bullets) {
             players[data.players[i]._id].bullets[bullet].x = data.players[i].bullets[bullet].x;
@@ -257,5 +273,15 @@ socket.on('removeObject', (data) => {
         delete players[data.owner].bullets[data._id];
         break;
     }
-    
+});
+
+socket.on('updateTable', (data) => {
+    console.log(data);
+    updateTable(data);
+});
+
+socket.on('restartGame', (data) => {
+    for (var player in players) {
+        players[player].bullets = {};
+    }
 });
