@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="main_page">
 	<head>
 		<title>Vector Arena</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
@@ -12,8 +12,6 @@
 
 		<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 		<script>var socket = io();</script>
-		<script src="client/js/userInfo.js"></script>
-		<script src="client/js/user.js"></script>
 		<script src="client/js/mapCreator.js"></script>
 		<script src="client/js/lobby.js"></script>
 		<script src="client/js/game.js"></script>
@@ -103,6 +101,7 @@
 			<button class="btn btn-default" id="log_button">Login</button>
 			<button class="btn btn-default" id="logout_button">Log out</button>
 			<button class="btn btn-default" id="all_maps_button">Select Map</button>
+			<button class="btn btn-default" id="map_creator_button">Map Creator</button>
 		</header>
 		<center id="center">
 			<article id="article">
@@ -118,6 +117,6 @@
 		</aside>
 	</body>
 	<script src="client/js/modal.js"></script>
-	
+	<script src="client/js/user.js"></script>
 	<script src="client/js/lists.js"></script>
 </html>

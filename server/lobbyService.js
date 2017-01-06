@@ -15,7 +15,7 @@ function Connection(_id, socket) {
 	this.connect = function(socket) {
         socket.on('enterLobby', (data) => {
             gameService.addSocket(socket);
-
+            
             const res = gameService.addPlayer(socket.id, data.name);
 
             if (res === "Player added!") {
@@ -83,6 +83,7 @@ var addSocket = (socket) => {
     connections[socket.id] = new Connection(socket.id, socket);
     connections[socket.id].connect(socket);
     lobbyInfo.connectonsNum++;
+    
     for (var conn in connections) {
         connections[conn].socket.emit('lobbyInfo', lobbyInfo);
     }

@@ -6,7 +6,7 @@ var mapCreatorModal = document.getElementById('map_creator_modal');
 var regBtn = document.getElementById("reg_button");
 var logBtn = document.getElementById("log_button");
 var logoutBtn = document.getElementById("logout_button");
-var mapCreatorBtn = document.createElement("button");
+var mapCreatorBtn = document.getElementById("map_creator_button");
 
 var usernameSpan = document.getElementById('username_span');
 

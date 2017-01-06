@@ -13,6 +13,7 @@ mongoService.mongoConnect(() => {
 	})
 });
 
+
 var deltaTimer = {
 	then: Date.now(),
 	delta: 0,
@@ -57,8 +58,6 @@ function restartGame() {
 function announceWinner(init) {
 	restartGame();
 };
-
-
 
 function Bullet(init) {
 	this._id = init._id;

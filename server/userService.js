@@ -10,7 +10,7 @@ const register = (request, reply) => {
                 const userData = {
                     _id: request.name,
                     password: hashedPassword,
-                    auth: 'admin',
+                    auth: 'user',
                     access_token: undefined,
                     timeStamp: undefined,
                 };

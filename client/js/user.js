@@ -8,19 +8,10 @@ var authorisation = '';
 
 var allMapsBtn = document.getElementById("all_maps_button");
 
+initUser();
+
 function initUser() {
-    if(username == "" || accessToken == "" ||
-    username == undefined || accessToken == undefined ||
-    username == null || accessToken == null) {
-        logoutBtn.style.display = "none";
-    } else {
-        regBtn.style.display = "none";
-        logBtn.style.display = "none";
-        usernameSpan.innerHTML = "User: " + username;
-
-        socket.emit('authenticate', {name: username, accessToken: accessToken});
-    }
-
+    socket.emit('authenticate', {name: username, accessToken: accessToken});
 }
 
 logForm.onsubmit = (e) => {
@@ -45,7 +36,6 @@ mapCreatorForm.onsubmit = (e) => {
     var mapName = document.getElementById('map_name').value;
     var width = document.getElementById('map_width').value;
     var height = document.getElementById('map_height').value;
-    // socket.emit('mapCreator', {name: username, accessToken: accessToken});
     mapCreatorModal.style.display = "none";
     mapCreatorInit({name: mapName, width: width, height: height});
 }
@@ -58,11 +48,6 @@ socket.on('loginData', (data) => {
         accessToken = localStorage.getItem("access_token");
 
         logModal.style.display = "none";
-        regBtn.style.display = "none";
-        logBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        mapCreatorBtn.style.display = "inline-block";
-        usernameSpan.innerText = username;
         socket.emit('authenticate', {name: username, accessToken: accessToken});
     } else {
         logAnswer.innerText = data.message;
@@ -72,11 +57,22 @@ socket.on('loginData', (data) => {
 socket.on('authenticateRes', (data) => {
     console.log(data);
     if (data === 'admin') {
-        mapCreatorBtn.setAttribute('class', 'btn btn-default');
-        mapCreatorBtn.setAttribute('id', 'map_creator_button');
-        mapCreatorBtn.innerText = 'Map Creator';
-
-        header.appendChild(mapCreatorBtn);
+        regBtn.style.display = "none";
+        logBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        mapCreatorBtn.style.display = "inline-block";
+        allMapsBtn.style.display = "inline-block";
+        usernameSpan.innerHTML = "User: " + username;
+    } else if (data === 'user') {
+        console.log(data);
+        regBtn.style.display = "none";
+        logBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        allMapsBtn.style.display = "inline-block";
+        usernameSpan.innerHTML = "User: " + username;
+    } else {
+        regBtn.style.display = "inline-block";
+        logBtn.style.display = "inline-block";
     }
 });
 
