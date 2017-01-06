@@ -276,7 +276,6 @@ socket.on('removeObject', (data) => {
 });
 
 socket.on('updateTable', (data) => {
-    console.log(data);
     updateTable(data);
 });
 

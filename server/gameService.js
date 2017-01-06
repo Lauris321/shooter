@@ -10,7 +10,7 @@ var tableData = {};
 mongoService.mongoConnect(() => {
     mongoService.getItemById('Rooms', 'mapsCollection', (res) => {
 		map = res;
-	})
+	});
 });
 
 
@@ -404,6 +404,12 @@ var addSocket = (socket) => {
     sockets[socket.id] = socket;
 }
 
+var changeMap = (mapId) => {
+	mongoService.getItemById(mapId, 'mapsCollection', (res) => {
+		map = res;
+	});
+}
+
 setInterval(() => {
 	updateGame();
 }, 1000/60);
@@ -414,4 +420,5 @@ module.exports = {
     addSocket,
     sendInitPack,
     sendCreateObjectPack,
+	changeMap,
 };

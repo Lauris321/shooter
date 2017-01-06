@@ -43,6 +43,16 @@ function Connection(_id, socket) {
             });
         });
 
+        socket.on('getMap', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if (res === 'admin') {
+                    mongoDb.getItemById(data.mapName, 'mapsCollection', (map) => {
+                        socket.emit('getMapRes', map);
+                    });
+                }
+            });
+        });
+
         socket.on('addMap', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin') {
@@ -51,11 +61,22 @@ function Connection(_id, socket) {
             });
         });
 
+        socket.on('changeMap', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    gameService.changeMap(data.mapName);
+                }
+            });
+        });
+
         socket.on('getAllMaps', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin') {
                     mongoDb.getAllItems('mapsCollection', (all) => {
-                        socket.emit('allMapsRes', all);
+                        var result = {};
+                        result['maps'] = all
+                        result['function'] = data.function;
+                        socket.emit('allMapsRes', result);
                     });
                 }
             });

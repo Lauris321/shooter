@@ -6,7 +6,6 @@ var spawnForm = document.createElement("form");
 
 var mapCreatorSubmit = document.createElement("button");
 
-
 function createMapCreatorUI() {
     var aside = document.getElementById('aside');
     aside.innerHTML = '';
@@ -84,53 +83,60 @@ function createMapCreatorUI() {
 }
 
 function mapCreatorInit(data) {
-    creatorMap = {
-        "_id": data.name,
-        "width": data.width,
-        "height": data.height,
-        "spawnpoints": [
-            {
-                "_id": 0,
-                "x": 100,
-                "y": 100,
-                "color": "#0000FF",
-                "free": true
-            },
-            {
-                "_id": 1,
-                "x": 400,
-                "y": 400,
-                "color": "#FF0000",
-                "free": true
-            }
-        ],
-        "walls": [
-            {
-                "x": 0,
-                "y": 0,
-                "w": data.width,
-                "h": 8
-            },
-            {
-                "x": 0,
-                "y": data.height - 8,
-                "w": data.width,
-                "h": 8
-            },
-            {
-                "x": 0,
-                "y": 0,
-                "w": 8,
-                "h": data.height
-            },
-            {
-                "x": data.width - 8,
-                "y": 0,
-                "w": 8,
-                "h": data.height
-            }
-        ]
-    };
+    console.log(data);
+    if(data.edit) {
+        creatorMap = data;
+        
+    } else {
+        creatorMap = {
+            "_id": data.name,
+            "width": data.width,
+            "height": data.height,
+            "spawnpoints": [
+                {
+                    "_id": 0,
+                    "x": 100,
+                    "y": 100,
+                    "color": "#0000FF",
+                    "free": true
+                },
+                {
+                    "_id": 1,
+                    "x": 400,
+                    "y": 400,
+                    "color": "#FF0000",
+                    "free": true
+                }
+            ],
+            "walls": [
+                {
+                    "x": 0,
+                    "y": 0,
+                    "w": data.width,
+                    "h": 8
+                },
+                {
+                    "x": 0,
+                    "y": data.height - 8,
+                    "w": data.width,
+                    "h": 8
+                },
+                {
+                    "x": 0,
+                    "y": 0,
+                    "w": 8,
+                    "h": data.height
+                },
+                {
+                    "x": data.width - 8,
+                    "y": 0,
+                    "w": 8,
+                    "h": data.height
+                }
+            ]
+        };
+    }
+    
     players = [];
 
     document.getElementById('center').innerHTML = 
@@ -152,9 +158,10 @@ function mapCreatorInit(data) {
 
     document.onmouseup = function(event){
         for(var wall of creatorMap['walls']) {
-            if (mouseX > wall.x && mouseX < (wall.x + wall.w) &&
-                mouseY > wall.y && mouseY < (wall.y + wall.h)) {
+            if ((mouseX > wall.x) && (mouseX < (wall.x + wall.w)) &&
+                (mouseY > wall.y) && (mouseY < (wall.y + wall.h))) {
                 creatorMap['walls'].splice(creatorMap['walls'].indexOf(wall), 1);
+                break;
             }
         }
 

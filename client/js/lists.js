@@ -1,26 +1,25 @@
-var chosenMap = localStorage.getItem("chosenMap");
-
-if(chosenMap == "" || chosenMap == undefined || chosenMap == null) {
-    
-} else {
-    allMapsBtn.innerHTML = `Selected: ${chosenMap}`;
+allMapsBtn.onclick = function() {
+    socket.emit('getAllMaps', {name: username, function: 'chooseMap', accessToken: accessToken});
 }
 
-allMapsBtn.onclick = function() {
-    socket.emit('getAllMaps', {name: username, accessToken: accessToken});
+changeCurrentMapBtn.onclick = function() {
+    socket.emit('getAllMaps', {name: username, function: 'changeMap', accessToken: accessToken});
 }
 
 socket.on('allMapsRes', (data) => {
     initAllMapsList(data);
 });
 
-function chooseMap(mapName) {
-    chosenMap = mapName;
-    localStorage.setItem("chosenMap", chosenMap);
-    allMapsBtn.innerHTML = `Selected: ${chosenMap}`;
+function changeMap(mapName) {
+    socket.emit('changeMap', {mapName: mapName, name: username, accessToken: accessToken});
 }
 
-function initAllMapsList(maps) {
+function chooseMap(mapName) {
+    mapCreatorInit(mapName);
+    socket.emit('getMap', {mapName: mapName, name: username, accessToken: accessToken});
+}
+
+function initAllMapsList(data) {
     var table = document.createElement("table");
     table.setAttribute('class', 'table table-hover');
     table.setAttribute('id', 'maps_list');
@@ -33,11 +32,11 @@ function initAllMapsList(maps) {
         </tr> 
     </thead>`;
     var tr = ``;
-    for(var map in maps) {
+    for(var map in data.maps) {
         tr += 
-        `<tr onclick="chooseMap('${maps[map]._id}')">
-            <td>${maps[map]._id}</td>
-            <td>${maps[map].maxplayers}</td>
+        `<tr onclick="${data.function}('${data.maps[map]._id}')">
+            <td>${data.maps[map]._id}</td>
+            <td>${data.maps[map].maxplayers}</td>
         </tr>`;
         
     }
@@ -45,3 +44,8 @@ function initAllMapsList(maps) {
     document.getElementById("article").innerHTML = "";
     document.getElementById("article").appendChild(table);
 }
+
+socket.on('getMapRes', (data) => {
+    data.edit = true;
+    mapCreatorInit(data);
+});

@@ -7,6 +7,7 @@ var accessToken = localStorage.getItem("access_token");
 var authorisation = '';
 
 var allMapsBtn = document.getElementById("all_maps_button");
+var changeCurrentMapBtn = document.getElementById("change_current_map_button");
 
 initUser();
 
@@ -55,20 +56,18 @@ socket.on('loginData', (data) => {
 });
 
 socket.on('authenticateRes', (data) => {
-    console.log(data);
     if (data === 'admin') {
         regBtn.style.display = "none";
         logBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
         mapCreatorBtn.style.display = "inline-block";
         allMapsBtn.style.display = "inline-block";
+        changeCurrentMapBtn.style.display = "inline-block";
         usernameSpan.innerHTML = "User: " + username;
     } else if (data === 'user') {
-        console.log(data);
         regBtn.style.display = "none";
         logBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
-        allMapsBtn.style.display = "inline-block";
         usernameSpan.innerHTML = "User: " + username;
     } else {
         regBtn.style.display = "inline-block";
