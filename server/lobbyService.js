@@ -69,6 +69,14 @@ function Connection(_id, socket) {
             });
         });
 
+        socket.on('deleteMap', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    mongoDb.deleteOneItem(data.mapName, 'mapsCollection');
+                }
+            });
+        });
+
         socket.on('getAllMaps', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin') {

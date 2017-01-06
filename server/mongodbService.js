@@ -67,6 +67,10 @@ const clearToken = (username, usedCollection, callback) => {
     callback();
 };
 
+const deleteOneItem = (itemId, usedCollection) => {
+    collections[usedCollection].deleteOne({ _id: itemId });
+};
+
 module.exports = {
     mongoConnect,
     insertItem,
@@ -75,4 +79,5 @@ module.exports = {
     setAccessToken,
     setTimestamp,
     clearToken,
+    deleteOneItem,
 };

@@ -8,6 +8,7 @@ var authorisation = '';
 
 var allMapsBtn = document.getElementById("all_maps_button");
 var changeCurrentMapBtn = document.getElementById("change_current_map_button");
+var deleteMapBtn = document.getElementById("delete_map_button");
 
 initUser();
 
@@ -63,6 +64,7 @@ socket.on('authenticateRes', (data) => {
         mapCreatorBtn.style.display = "inline-block";
         allMapsBtn.style.display = "inline-block";
         changeCurrentMapBtn.style.display = "inline-block";
+        deleteMapBtn.style.display = "inline-block";
         usernameSpan.innerHTML = "User: " + username;
     } else if (data === 'user') {
         regBtn.style.display = "none";

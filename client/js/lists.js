@@ -6,17 +6,25 @@ changeCurrentMapBtn.onclick = function() {
     socket.emit('getAllMaps', {name: username, function: 'changeMap', accessToken: accessToken});
 }
 
+deleteMapBtn.onclick = function() {
+    socket.emit('getAllMaps', {name: username, function: 'deleteMap', accessToken: accessToken});
+}
+
 socket.on('allMapsRes', (data) => {
     initAllMapsList(data);
 });
+
+function chooseMap(mapName) {
+    mapCreatorInit(mapName);
+    socket.emit('getMap', {mapName: mapName, name: username, accessToken: accessToken});
+}
 
 function changeMap(mapName) {
     socket.emit('changeMap', {mapName: mapName, name: username, accessToken: accessToken});
 }
 
-function chooseMap(mapName) {
-    mapCreatorInit(mapName);
-    socket.emit('getMap', {mapName: mapName, name: username, accessToken: accessToken});
+function deleteMap(mapName) {
+    socket.emit('deleteMap', {mapName: mapName, name: username, accessToken: accessToken});
 }
 
 function initAllMapsList(data) {
