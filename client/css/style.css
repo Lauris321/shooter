@@ -116,3 +116,12 @@ select {
 .table {
     width: 350px;
 }
+
+#player_list {
+    width: 100%;
+    color: #EEEEEE
+}
+
+th {
+    text-align: none;
+}

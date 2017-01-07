@@ -84,7 +84,6 @@ const changeUserStats = (username, stats, usedCollection, callback) => {
         var totalShotsFired = stats.totalShotsFired + res.totalShotsFired;
         var totalHits = stats.totalHits + res.totalHits;
         var totalDeaths = stats.totalDeaths + res.totalDeaths;
-        console.log(totalShotsFired);
         collections[usedCollection].update(
             { _id: username },
             {

@@ -119,7 +119,6 @@ function Connection(_id, socket) {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin' || res === 'user') {
                     mongoDb.getItemById(data.name, 'usersCollection', (result) => {
-                        console.log(result);
                         socket.emit('getStatsRes', result);
                     });
                 }

@@ -56,6 +56,7 @@ socket.on('loginData', (data) => {
         accessToken = localStorage.getItem("access_token");
 
         logModal.style.display = "none";
+        location.reload();
         socket.emit('authenticate', {name: username, accessToken: accessToken});
     } else {
         logAnswer.innerText = data.message;
@@ -63,6 +64,7 @@ socket.on('loginData', (data) => {
 });
 
 socket.on('authenticateRes', (data) => {
+    
     if (data === 'admin') {
         regBtn.style.display = "none";
         logBtn.style.display = "none";

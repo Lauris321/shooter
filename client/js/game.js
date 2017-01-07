@@ -85,6 +85,8 @@ function updateTable(data) {
     document.getElementById('players').innerHTML = '';
     var table = document.createElement("table");
     table.setAttribute('id', 'player_list');
+    table.setAttribute('class', 'table');
+    table.setAttribute('width', '100%');
     table.innerHTML = 
     '<tr>' + 
         '<th>#</th>' + 

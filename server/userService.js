@@ -11,6 +11,9 @@ const register = (request, reply) => {
                     _id: request.name,
                     password: hashedPassword,
                     auth: 'user',
+                    totalShotsFired: 0,
+                    totalHits: 0,
+                    totalDeaths: 0,
                     access_token: undefined,
                     timeStamp: undefined,
                 };

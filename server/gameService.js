@@ -201,13 +201,18 @@ function Player(_id, spawn, name, user) {
 		socket.on('disconnect', () => {
 			map.spawnpoints[players[this._id].spawn._id].free = true;
 			delete tableData[this._id];
+			
+
 			for (var i in sockets) {
+				sockets[i].emit('updateTable', tableData);
 				sockets[i].emit('removeObject', this.getUpdatePack());
 			}
 
-			mongoService.changeUserStats(this.user, this.stats, 'usersCollection', () => {
-				
-			});
+			if (this.user != '') {
+				mongoService.changeUserStats(this.user, this.stats, 'usersCollection', () => {
+
+				});
+			}
 
 			delete sockets[socket.id];
 			delete players[socket.id];
@@ -415,6 +420,7 @@ var addPlayer = (playerId, name, user) => {
 			players[playerId] = new Player(playerId, value, name, user);
 			found = true;
 			value.free = false;
+			console.log(map);
 			return "Player added!";
 		}
 	}

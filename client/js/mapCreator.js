@@ -65,16 +65,16 @@ function createMapCreatorUI() {
 
     spawnForm.onsubmit = (e) => {
         e.preventDefault();
-        var x = document.getElementById('spawn_x').value;
-        var y = document.getElementById('spawn_y').value;
+        var x = parseInt(document.getElementById('spawn_x').value);
+        var y = parseInt(document.getElementById('spawn_y').value);
         var color = document.getElementById('spawn_color').value;
         creatorMap.spawnpoints.push({
-            "_id": creatorMap.spawnpoints.length,
             "x": x,
             "y": y,
             "color": color,
             "free": true
         });
+        console.log(creatorMap);
     }
 
     mapCreatorSubmit.onclick = function() {
@@ -83,7 +83,7 @@ function createMapCreatorUI() {
 }
 
 function mapCreatorInit(data) {
-    console.log(data);
+    
     if(data.edit) {
         creatorMap = data;
         
@@ -94,14 +94,12 @@ function mapCreatorInit(data) {
             "height": data.height,
             "spawnpoints": [
                 {
-                    "_id": 0,
                     "x": 100,
                     "y": 100,
                     "color": "#0000FF",
                     "free": true
                 },
                 {
-                    "_id": 1,
                     "x": 400,
                     "y": 400,
                     "color": "#FF0000",
