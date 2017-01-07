@@ -415,14 +415,17 @@ var getPlayer = (playerId) => {
 }
 
 var addPlayer = (playerId, name, user) => {
+	var num = 0;
 	for (var value of map.spawnpoints) {
 		if( value.free == true) {
 			players[playerId] = new Player(playerId, value, name, user);
 			found = true;
 			value.free = false;
+			value._id = num;
 			console.log(map);
 			return "Player added!";
 		}
+		num++;
 	}
 	return "No spawns left!";
 }
@@ -436,6 +439,7 @@ var changeMap = (mapId) => {
 		map = res;
 	});
 }
+
 
 setInterval(() => {
 	updateGame();

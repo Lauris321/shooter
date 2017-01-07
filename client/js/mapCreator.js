@@ -51,10 +51,10 @@ function createMapCreatorUI() {
 
     wallForm.onsubmit = (e) => {
         e.preventDefault();
-        var x = document.getElementById('wall_x').value;
-        var y = document.getElementById('wall_y').value;
-        var width = document.getElementById('wall_width').value;
-        var height = document.getElementById('wall_height').value;
+        var x = parseInt(document.getElementById('wall_x').value);
+        var y = parseInt(document.getElementById('wall_y').value);
+        var width = parseInt(document.getElementById('wall_width').value);
+        var height = parseInt(document.getElementById('wall_height').value);
         creatorMap.walls.push({
             "x": x,
             "y": y,
@@ -74,7 +74,7 @@ function createMapCreatorUI() {
             "color": color,
             "free": true
         });
-        console.log(creatorMap);
+        creatorMap.maxplayers++;
     }
 
     mapCreatorSubmit.onclick = function() {
@@ -86,12 +86,12 @@ function mapCreatorInit(data) {
     
     if(data.edit) {
         creatorMap = data;
-        
     } else {
         creatorMap = {
             "_id": data.name,
             "width": data.width,
             "height": data.height,
+            "maxplayers": 2,
             "spawnpoints": [
                 {
                     "x": 100,
@@ -170,6 +170,7 @@ function mapCreatorInit(data) {
 
             if (distance < 10) {
                 creatorMap['spawnpoints'].splice(creatorMap['spawnpoints'].indexOf(spawn), 1);
+                creatorMap.maxplayers--;
             }
             return false;
         }
