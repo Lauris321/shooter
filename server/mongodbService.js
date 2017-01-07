@@ -67,6 +67,38 @@ const clearToken = (username, usedCollection, callback) => {
     callback();
 };
 
+const changeAuth = (username, auth, usedCollection, callback) => {
+    collections[usedCollection].update(
+        { _id: username },
+        {
+            $set: {
+                auth: auth,
+            },
+        }
+    );
+    callback();
+};
+
+const changeUserStats = (username, stats, usedCollection, callback) => {
+    getItemById(username, usedCollection, (res) => {
+        var totalShotsFired = stats.totalShotsFired + res.totalShotsFired;
+        var totalHits = stats.totalHits + res.totalHits;
+        var totalDeaths = stats.totalDeaths + res.totalDeaths;
+        console.log(totalShotsFired);
+        collections[usedCollection].update(
+            { _id: username },
+            {
+                $set: {
+                    totalShotsFired: totalShotsFired,
+                    totalHits: totalHits,
+                    totalDeaths: totalDeaths,
+                },
+            }
+        );
+        callback();
+    });
+};
+
 const deleteOneItem = (itemId, usedCollection) => {
     collections[usedCollection].deleteOne({ _id: itemId });
 };
@@ -79,5 +111,7 @@ module.exports = {
     setAccessToken,
     setTimestamp,
     clearToken,
+    changeAuth,
+    changeUserStats,
     deleteOneItem,
 };

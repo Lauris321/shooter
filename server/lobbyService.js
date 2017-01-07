@@ -16,13 +16,20 @@ function Connection(_id, socket) {
         socket.on('enterLobby', (data) => {
             gameService.addSocket(socket);
             
-            const res = gameService.addPlayer(socket.id, data.name);
+            users.authenticateUser(data.user, data.accessToken, (result) => {
+                var res;
+                if(result === 'admin' || result === 'user') {
+                    res = gameService.addPlayer(socket.id, data.name, data.user);
+                } else {
+                    res = gameService.addPlayer(socket.id, data.name, '');
+                }
 
-            if (res === "Player added!") {
-            	gameService.sendInitPack(socket.id);
-            	gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
-            	gameService.getPlayer(socket.id).connect(socket);
-            }
+                if (res === "Player added!") {
+                    gameService.sendInitPack(socket.id);
+                    gameService.sendCreateObjectPack(gameService.getPlayer(socket.id).getInitPack());
+                    gameService.getPlayer(socket.id).connect(socket);
+                }
+            });
         });
 
         socket.on('login', (data) => {
@@ -85,6 +92,35 @@ function Connection(_id, socket) {
                         result['maps'] = all
                         result['function'] = data.function;
                         socket.emit('allMapsRes', result);
+                    });
+                }
+            });
+        });
+
+        socket.on('getAllUsers', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    mongoDb.getAllItems('usersCollection', (all) => {
+                        socket.emit('allUsersRes', all);
+                    });
+                }
+            });
+        });
+
+        socket.on('changeAuth', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin') {
+                    mongoDb.changeAuth(data.user, data.auth, 'usersCollection', (all) => {});
+                }
+            });
+        });
+
+        socket.on('getStats', (data) => {
+            users.authenticateUser(data.name, data.accessToken, (res) => {
+                if(res === 'admin' || res === 'user') {
+                    mongoDb.getItemById(data.name, 'usersCollection', (result) => {
+                        console.log(result);
+                        socket.emit('getStatsRes', result);
                     });
                 }
             });

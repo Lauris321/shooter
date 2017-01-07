@@ -4,7 +4,7 @@ var lobbyInfo = {
 
 function enterLobby() {
     const chosenName = document.getElementById('name_input').value;
-    socket.emit('enterLobby', {name: chosenName});
+    socket.emit('enterLobby', {name: chosenName, user: username, accessToken: accessToken});
 }
 
 socket.on('lobbyInfo', (data) => {

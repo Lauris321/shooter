@@ -101,10 +101,11 @@ function Bullet(init) {
 	}
 }
 
-function Player(_id, spawn, name) {
+function Player(_id, spawn, name, user) {
 	this._id = _id;
 	this.type = "player";
 	this.name = name;
+	this.user = user;
 	this.spawn = spawn;
 	this.x = spawn.x;
 	this.y = spawn.y;
@@ -121,6 +122,12 @@ function Player(_id, spawn, name) {
 	this.color = spawn.color;
 	this.bullets = {};
 	this.score = 0;
+	this.stats = {
+		totalShotsFired: 0,
+		totalHits: 0,
+		totalDeaths: 0,
+	};
+	
 	this.respawnTimer = {
 		diedAt: 0,
 		respawnTime: 5000,
@@ -197,6 +204,11 @@ function Player(_id, spawn, name) {
 			for (var i in sockets) {
 				sockets[i].emit('removeObject', this.getUpdatePack());
 			}
+
+			mongoService.changeUserStats(this.user, this.stats, 'usersCollection', () => {
+				
+			});
+
 			delete sockets[socket.id];
 			delete players[socket.id];
 		});
@@ -254,6 +266,10 @@ function Player(_id, spawn, name) {
 
 			if(this.pressingAttack && (Date.now() - this.shootTimer.lastShot) > this.shootTimer.shootingRate ) {
 				this.shootTimer.lastShot = Date.now();
+				if(this.user != '') {
+					this.stats.totalShotsFired++;
+				}
+
 				var newBullet = {
 					_id: Math.random(),
 					type: 'bullet',
@@ -287,6 +303,11 @@ function Player(_id, spawn, name) {
 			} else if (hit != false && hit != this._id && players[hit].alive) {
 				players[hit].alive = false;
 				this.score++;
+
+				if(this.user != '') {
+					this.stats.totalHits++;
+					players[hit].stats.totalDeaths++;
+				}
 
 				tableData[this._id].score = this.score;
 
@@ -388,10 +409,10 @@ var getPlayer = (playerId) => {
     return players[playerId];
 }
 
-var addPlayer = (playerId, name) => {
+var addPlayer = (playerId, name, user) => {
 	for (var value of map.spawnpoints) {
 		if( value.free == true) {
-			players[playerId] = new Player(playerId, value, name);
+			players[playerId] = new Player(playerId, value, name, user);
 			found = true;
 			value.free = false;
 			return "Player added!";

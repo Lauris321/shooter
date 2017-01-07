@@ -9,6 +9,12 @@ var authorisation = '';
 var allMapsBtn = document.getElementById("all_maps_button");
 var changeCurrentMapBtn = document.getElementById("change_current_map_button");
 var deleteMapBtn = document.getElementById("delete_map_button");
+var changeUsersAuthBtn = document.getElementById("change_auth_button");
+var statisticsBtn = document.getElementById("statistics_button");
+
+statisticsBtn.onclick = function() {
+    socket.emit('getStats', {name: username, accessToken: accessToken});
+}
 
 initUser();
 
@@ -65,15 +71,51 @@ socket.on('authenticateRes', (data) => {
         allMapsBtn.style.display = "inline-block";
         changeCurrentMapBtn.style.display = "inline-block";
         deleteMapBtn.style.display = "inline-block";
+        changeUsersAuthBtn.style.display = "inline-block";
+        statisticsBtn.style.display = "inline-block";
         usernameSpan.innerHTML = "User: " + username;
     } else if (data === 'user') {
         regBtn.style.display = "none";
         logBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
+        statisticsBtn.style.display = "inline-block";
         usernameSpan.innerHTML = "User: " + username;
     } else {
         regBtn.style.display = "inline-block";
         logBtn.style.display = "inline-block";
     }
+});
+
+socket.on('getStatsRes', (data) => {
+    console.log(data);
+    var table = document.createElement("table");
+    table.setAttribute('class', 'table table-hover');
+    table.setAttribute('id', 'maps_list');
+    table.setAttribute('width', '300px');
+    document.getElementById("article").innerHTML = 
+    `<caption>User statistics:</caption>
+    <thead> 
+        <tr> 
+            <th>Name</th>
+            <th>Max Players</th>
+        </tr> 
+    </thead>`;
+    var tr = ``;
+        tr += 
+        `<tr>
+            <td>Total shots fired</td>
+            <td>${data.totalShotsFired}</td>
+        </tr>
+        <tr>
+            <td>Total hits</td>
+            <td>${data.totalHits}</td>
+        </tr>
+        <tr>
+            <td>Total deaths</td>
+            <td>${data.totalDeaths}</td>
+        </tr>`;
+    table.innerHTML += tr;
+    document.getElementById("article").innerHTML = "";
+    document.getElementById("article").appendChild(table);
 });
 
