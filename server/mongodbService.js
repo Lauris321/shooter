@@ -17,6 +17,10 @@ const insertItem = (item, usedCollection) => {
     collections[usedCollection].insert(item);
 };
 
+const saveItem = (item, usedCollection) => {
+    collections[usedCollection].save(item);
+};
+
 const getItemById = (id, usedCollection, callback) => {
     while(collections === undefined){}
     collections[usedCollection].find({ _id: id }).toArray((err, res) => {
@@ -105,6 +109,7 @@ const deleteOneItem = (itemId, usedCollection) => {
 module.exports = {
     mongoConnect,
     insertItem,
+    saveItem,
     getItemById,
     getAllItems,
     setAccessToken,

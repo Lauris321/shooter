@@ -422,7 +422,6 @@ var addPlayer = (playerId, name, user) => {
 			found = true;
 			value.free = false;
 			value._id = num;
-			console.log(map);
 			return "Player added!";
 		}
 		num++;

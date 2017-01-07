@@ -89,7 +89,6 @@ socket.on('authenticateRes', (data) => {
 });
 
 socket.on('getStatsRes', (data) => {
-    console.log(data);
     var table = document.createElement("table");
     table.setAttribute('class', 'table table-hover');
     table.setAttribute('id', 'maps_list');

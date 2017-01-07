@@ -83,7 +83,6 @@ function createMapCreatorUI() {
 }
 
 function mapCreatorInit(data) {
-    
     if(data.edit) {
         creatorMap = data;
     } else {
