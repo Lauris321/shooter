@@ -1,16 +1,20 @@
 allMapsBtn.onclick = function() {
+    exitMainScreen();
     socket.emit('getAllMaps', {name: username, function: 'chooseMap', accessToken: accessToken});
 }
 
 changeCurrentMapBtn.onclick = function() {
+    exitMainScreen();
     socket.emit('getAllMaps', {name: username, function: 'changeMap', accessToken: accessToken});
 }
 
 deleteMapBtn.onclick = function() {
+    exitMainScreen();
     socket.emit('getAllMaps', {name: username, function: 'deleteMap', accessToken: accessToken});
 }
 
 changeUsersAuthBtn.onclick = function() {
+    exitMainScreen();
     socket.emit('getAllUsers', {name: username, accessToken: accessToken});
 }
 
@@ -28,6 +32,7 @@ function chooseMap(mapName) {
 }
 
 function changeMap(mapName) {
+    location.reload();
     socket.emit('changeMap', {mapName: mapName, name: username, accessToken: accessToken});
 }
 
@@ -75,7 +80,7 @@ function initAllUsersList(users) {
     <thead> 
         <tr> 
             <th>Username</th>
-            <th>Authorisation</th>
+            <th>Authorization</th>
         </tr> 
     </thead>`;
     var tr = ``;

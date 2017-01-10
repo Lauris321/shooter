@@ -201,11 +201,10 @@ function Player(_id, spawn, name, user) {
 		socket.on('disconnect', () => {
 			map.spawnpoints[players[this._id].spawn._id].free = true;
 			delete tableData[this._id];
-			
 
 			for (var i in sockets) {
-				sockets[i].emit('updateTable', tableData);
 				sockets[i].emit('removeObject', this.getUpdatePack());
+				sockets[i].emit('updateTable', tableData);
 			}
 
 			if (this.user != '') {

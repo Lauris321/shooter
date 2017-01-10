@@ -94,7 +94,7 @@ table tr th td {
     color: #FF0000;
 }
 
-#reg_button, #log_button, #logout_button, #all_maps_button, #map_creator_button, 
+#reg_button, #log_button, #logout_button, #all_maps_button, #map_creator_button, #back_button, 
 #change_current_map_button, #delete_map_button, #change_auth_button, #statistics_button {
     display: none;
 }

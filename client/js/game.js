@@ -119,7 +119,7 @@ function createChat() {
     username == null || accessToken == null) {
         form.innerHTML += `Login to write messages`;
     } else {
-        form.innerHTML += `<input id="chat_input" type="text"></input>`;
+        form.innerHTML += `<input id="chat_input" type="text" required></input>`;
     }
     
     document.getElementById('chat').appendChild(form);
@@ -159,6 +159,8 @@ socket.on('init', (data) => {
     socket.on('addToChat', (data) => {
         chatText.innerHTML += 
         `<div id="message"><b style="float: left; color: ${data.color}">${data.name}: &nbsp </b><p>${data.message}</p></div>`;
+
+        chatText.scrollTop = chatText.scrollHeight - chatText.clientHeight;
     });
 
     _id = data.yourId;

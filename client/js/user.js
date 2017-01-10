@@ -11,8 +11,14 @@ var changeCurrentMapBtn = document.getElementById("change_current_map_button");
 var deleteMapBtn = document.getElementById("delete_map_button");
 var changeUsersAuthBtn = document.getElementById("change_auth_button");
 var statisticsBtn = document.getElementById("statistics_button");
+var backBtn = document.getElementById("back_button");
+
+backBtn.onclick = function() {
+    location.reload();
+}
 
 statisticsBtn.onclick = function() {
+    exitMainScreen();
     socket.emit('getStats', {name: username, accessToken: accessToken});
 }
 
@@ -41,11 +47,25 @@ regForm.onsubmit = (e) => {
 var mapCreatorForm = document.getElementById('map_creator_form');
 mapCreatorForm.onsubmit = (e) => {
     e.preventDefault();
+    exitMainScreen();
     var mapName = document.getElementById('map_name').value;
     var width = document.getElementById('map_width').value;
     var height = document.getElementById('map_height').value;
     mapCreatorModal.style.display = "none";
     mapCreatorInit({name: mapName, width: width, height: height});
+}
+
+function exitMainScreen() {
+    regBtn.style.display = "none";
+    logBtn.style.display = "none";
+    mapCreatorBtn.style.display = "none";
+    allMapsBtn.style.display = "none";
+    changeCurrentMapBtn.style.display = "none";
+    deleteMapBtn.style.display = "none";
+    changeUsersAuthBtn.style.display = "none";
+    statisticsBtn.style.display = "none";
+    backBtn.style.display = "inline-block";
+    usernameSpan.innerHTML = "User: " + username;
 }
 
 socket.on('loginData', (data) => {
@@ -64,7 +84,6 @@ socket.on('loginData', (data) => {
 });
 
 socket.on('authenticateRes', (data) => {
-    
     if (data === 'admin') {
         regBtn.style.display = "none";
         logBtn.style.display = "none";

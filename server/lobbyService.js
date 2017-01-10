@@ -63,7 +63,6 @@ function Connection(_id, socket) {
         socket.on('addMap', (data) => {
             users.authenticateUser(data.name, data.accessToken, (res) => {
                 if(res === 'admin') {
-                    console.log(data);
                     mongoDb.saveItem(data.map, 'mapsCollection');
                 }
             });

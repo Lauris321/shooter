@@ -5,6 +5,7 @@ var lobbyInfo = {
 function enterLobby() {
     const chosenName = document.getElementById('name_input').value;
     socket.emit('enterLobby', {name: chosenName, user: username, accessToken: accessToken});
+    exitMainScreen();
 }
 
 socket.on('lobbyInfo', (data) => {
