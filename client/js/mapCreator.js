@@ -1,5 +1,6 @@
 var creatorMap = {};
 var players = [];
+var spawnId = 0;
 
 var wallForm = document.createElement("form");
 var spawnForm = document.createElement("form");
@@ -166,12 +167,11 @@ function mapCreatorInit(data) {
             var dx = spawn.x - mouseX;
             var dy = spawn.y - mouseY;
             var distance = Math.sqrt(dx * dx + dy * dy);
-
+            console.log(spawn);
             if (distance < 10) {
                 creatorMap['spawnpoints'].splice(creatorMap['spawnpoints'].indexOf(spawn), 1);
                 creatorMap.maxplayers--;
             }
-            return false;
         }
     }
 
